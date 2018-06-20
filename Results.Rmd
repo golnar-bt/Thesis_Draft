@@ -1,0 +1,815 @@
+---
+title: "Untitled"
+author: "Golnar Babakhani Teimouri"
+date: "May 19, 2018"
+output: github_document
+---
+
+```{r  include=FALSE, , message=FALSE, warning=FALSE, paged.print=FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE, 
+  message = FALSE,
+  error = FALSE,
+  echo = FALSE
+)
+
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(purrr)
+library(tidytext)
+library(stringr)
+library(stringi)
+library(rtweet)
+library(readxl)
+library(topicmodels)
+library(scales)
+library(tm)
+library(Rmpfr)
+library(knitr)
+library(kableExtra)
+library(ggpubr)
+library(broom)
+library(igraph)
+library(ggraph)
+library(widyr)
+library(modelr)
+library(ggplot2)
+library(reshape2)
+library(lmtest)
+library(pscl)
+
+```
+
+```{r, include=FALSE}
+
+#After shooting Democrat tweets
+All.Democrats<- read_csv("~/Documents/Thesis/Draft/Git/Aggregated tweets/Congress.Dem.csv")
+n_distinct(All.Democrats$screen_name)
+#171
+
+#After shooting Republican tweets
+All.Republicans <- read_csv("~/Documents/Thesis/Draft/Git/Aggregated tweets/Congress.Rep.csv")
+n_distinct(All.Republicans$screen_name)
+#257
+
+#Before shooting Democrat tweets
+All.Democrats.Before <- read_csv("~/Documents/Thesis/Draft/Git/Aggregated tweets/Congress.Dem.Before.csv")
+n_distinct(All.Democrats.Before$screen_name)
+#170
+
+#Before shooting Republican tweets
+All.Repblicans.Before <- read_csv("~/Documents/Thesis/Draft/Git/Aggregated tweets/Congress.Rep.Before.csv")
+n_distinct(All.Repblicans.Before$screen_name)
+#264
+
+#All Congress members tweets after shootings
+Congress <- read_csv("~/Documents/Thesis/Draft/Git/Aggregated tweets/Congress.csv")
+n_distinct(Congress$screen_name)
+#428
+
+#All Congress memebers tweets before shootings
+Congress.Before <- read_csv("~/Documents/Thesis/Draft/Git/Aggregated tweets/Congress.Before.csv")
+n_distinct(Congress.Before$screen_name)
+#434
+
+#Shooting dataframe
+Shootings <- read_csv("~/Documents/Thesis/Draft/Git/Excel lists/MotherJones.csv")
+Shootings <- Shootings %>%
+  select(1,3,7,9,15)
+
+```
+
+# Congress tweets after shooting
+```{r}
+
+#BIGRAMS
+replace_reg <- "https://t.co/[A-Za-z\\d]+|http://[A-Za-z\\d]+|&amp;|&lt;|&gt;|RT|https"
+unnest_reg <- "([^A-Za-z_\\d#@']|'(?![A-Za-z_\\d#@]))"
+
+Congress_tokens <- Congress %>%
+  filter(!str_detect(text, "^[0-9]*$")) %>%
+  mutate(text = str_replace_all(text, replace_reg, "")) %>%
+  filter(!str_detect(text, '^"')) %>%
+  mutate(text = str_replace_all(text, "https://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
+  filter(!str_detect(text, "^RT")) %>%
+  unnest_tokens(output = word, input = text,token = "ngrams", n=2)%>%
+  anti_join(stop_words) 
+
+Congress_tokens <- Congress_tokens %>%
+  filter(!str_detect(word, "^@"))%>%
+  filter(!str_detect(word, "^#"))
+
+
+Congress_bigrams_separated <- Congress_tokens %>%
+  separate(word, c("word1", "word2"), sep = " ")
+
+Congress_bigrams_filtered <- Congress_bigrams_separated %>%
+   filter(!word1 %in% stop_words$word) %>%
+   filter(!word2 %in% stop_words$word)
+
+Congress_bigram_counts <- Congress_bigrams_filtered %>% 
+  count(word1, word2, sort = TRUE)
+ Congress_bigram_counts
+
+Congress_bigrams_united <- Congress_bigrams_filtered %>%
+   unite(bigram, word1, word2, sep = " ")
+Congress_bigrams_united
+
+
+# Creating TfIdf 
+(Congress_TfIdf <- Congress_bigrams_united %>%
+    count(R_or_D, bigram)%>%
+    bind_tf_idf(bigram, R_or_D, n))%>%
+  arrange(desc(tf_idf))%>%
+  slice(1:20)%>%
+  rename("Republican or Democrat"="R_or_D", "Term"=bigram)%>%
+  kable(caption = "Table 1. Highest Tfidf Bigrams in Tweets by Party 48 Hours After Shooting")%>%
+  kable_styling(full_width = FALSE)
+
+#Plotting Tfidf
+Graph1 <- Congress_TfIdf%>%
+  group_by(tf_idf>0.0002833)%>%
+  top_n(15, abs(tf_idf)) %>%
+  mutate(Term = reorder(bigram, tf_idf)) %>%
+  ggplot(aes(Term, tf_idf, fill = tf_idf>0.0002833)) +
+  geom_col(show.legend = TRUE) +
+  coord_flip() +
+  labs(title="Frequency of Words Used 48 Hours After Mass Shootings, 
+       2007-2017",
+       y="tf-idf") +
+  scale_fill_manual(name = "", labels = c("R", "D"), 
+                      values=c("red","blue"))
+Graph1
+
+```
+
+#Logs Ratio for after shootings
+```{r}
+
+#Terms used more than 200 times which both parties are equally likely to tweet about
+
+ratio <- Congress_bigrams_united%>%
+  count(bigram, R_or_D)%>%
+  filter(sum(n) >=200)%>%
+  ungroup() %>%
+  spread(R_or_D, n, fill = 0) %>%
+  mutate_if(is.numeric, funs((. + 1) / sum(. + 1))) %>%
+  mutate(logratio = log(R / D)) %>%
+  arrange(desc(logratio)) %>%
+  arrange(abs(logratio))
+ratio
+
+
+Graph3 <- ratio %>%
+  group_by(logratio < 0) %>%
+  top_n(15, abs(logratio)) %>%
+  ungroup() %>%
+  mutate(Term = reorder(bigram, logratio)) %>%
+  ggplot(aes(Term, logratio, fill = logratio < 0)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  labs(title="Comparing Log Odds Ratio48 Hours 
+       After Mass Shootings, 2007-2017",
+    y="log odds ratio (Republican/Democrat)") +
+   scale_fill_manual(name = "", labels = c("R", "D"), 
+                      values=c("red","blue"))+
+  scale_x_discrete(labels=c("gopoversight hearing" = "GOP Oversight Hearing",
+                            "vioelence askdems" = "Vioelce askdems",
+                            "altonsterling philandocastile"=
+                            "Atton Sterling,Philando Castile",
+                            "disarmhate askdems"="disarm hate, ask dems", 
+                            "askdems disarmhate"="askdems, disarm hate"))
+Graph3
+
+
+
+```
+
+#Comparing words frequency by plotting(after shooting)
+
+```{r}
+frequency <- Congress_bigrams_united %>%
+  group_by(R_or_D)%>%
+  count(bigram, sort = TRUE)%>%
+  left_join(Congress_bigrams_united %>%
+              group_by(R_or_D)%>%
+              summarise(total=n()))%>%
+              mutate(freq=n/total)
+frequency
+
+frequency <- frequency %>% 
+  select(R_or_D, bigram, freq) %>% 
+  spread(R_or_D, freq) %>%
+  arrange(R, D)
+frequency
+
+ggplot(frequency, aes(R, D)) +
+  geom_jitter(alpha = 0.1, size = 2.5, width = 0.25, height = 0.25) +
+  geom_text(aes(label = bigram), check_overlap = TRUE, vjust = 1.5) +
+  scale_x_log10(labels = percent_format()) +
+  scale_y_log10(labels = percent_format()) +
+  geom_abline(color = "red")+
+  labs(title="Comparing the Frequency of Terms used by Republicans 
+       and Democrats 48 Hours After Mass Shootings, 2--7-17",
+       x="Republicans", y="Democrats")
+
+```
+
+#Congress tweets before shootings
+
+```{r}
+
+replace_reg <- "https://t.co/[A-Za-z\\d]+|http://[A-Za-z\\d]+|&amp;|&lt;|&gt;|RT|https"
+unnest_reg <- "([^A-Za-z_\\d#@']|'(?![A-Za-z_\\d#@]))"
+
+Congress_before_tokens <- Congress.Before %>%
+  filter(!str_detect(text, "^[0-9]*$")) %>%
+  mutate(text = str_replace_all(text, replace_reg, "")) %>%
+  filter(!str_detect(text, '^"')) %>%
+  mutate(text = str_replace_all(text, "https://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
+  filter(!str_detect(text, "^RT")) %>%
+  unnest_tokens(output = word, input = text,token = "ngrams", n=2)%>%
+  anti_join(stop_words) 
+
+#Getting Rid of Hashtags and Mentions
+Congress_before_tokens %>%
+  count(word, sort=TRUE) %>%
+  filter(substr(word, 1, 1) != '#',
+         substr(word, 1, 1) != '@') %>% 
+ mutate(word = reorder(word, n)) 
+
+Congress_before_bigrams_separated <- Congress_before_tokens %>%
+  separate(word, c("word1", "word2"), sep = " ")
+
+Congress_before_bigrams_filtered <- Congress_before_bigrams_separated %>%
+   filter(!word1 %in% stop_words$word) %>%
+   filter(!word2 %in% stop_words$word)
+
+# new bigram counts:
+Congress_before_bigram_counts <- Congress_before_bigrams_filtered %>% 
+  count(word1, word2, sort = TRUE)
+ Congress_before_bigram_counts
+
+Congress_before_bigrams_united <- Congress_before_bigrams_filtered %>%
+   unite(bigram, word1, word2, sep = " ")
+Congress_before_bigrams_united
+
+
+#TfIdf
+(Congress_before_TfIdf <- Congress_before_bigrams_united %>%
+    count(R_or_D, bigram)%>%
+    bind_tf_idf(bigram, R_or_D, n))%>%
+  arrange(desc(tf_idf))%>%
+  slice(1:20)%>%
+  rename("Republican or Democrat"="R_or_D", "Term"=bigram)%>%
+  kable(caption = "Table 1. Highest Tfidf Bigrams in Tweets by Party 48 hours Before Shooting")%>%
+  kable_styling(full_width = FALSE)
+
+#Plotting Tfidf
+Graph2 <- Congress_before_TfIdf%>%
+  group_by(tf_idf>0.0002705)%>%
+  top_n(15, abs(tf_idf)) %>%
+  mutate(Term = reorder(bigram, tf_idf)) %>%
+  ggplot(aes(Term, tf_idf, fill = tf_idf>0.0002705)) +
+  geom_col(show.legend = TRUE) +
+  coord_flip() +
+  labs(title="Frequency of Words Used 48 Hours 
+       Before Mass Shootings, 2007-2017",
+    y="tf-idf") +
+   scale_fill_manual(name = "", labels = c("R", "D"), 
+                      values=c("red","blue"))
+Graph2
+
+
+```
+#Logs Ratio for before shooting
+
+```{r}
+
+ratio2 <- Congress_before_bigrams_united%>%
+  count(bigram, R_or_D)%>%
+  filter(sum(n) >=60)%>%
+  ungroup() %>%
+  spread(R_or_D, n, fill = 0) %>%
+  mutate_if(is.numeric, funs((. + 1) / sum(. + 1))) %>%
+  mutate(logratio = log(R / D)) %>%
+  arrange(desc(logratio)) %>%
+  arrange(abs(logratio))
+ratio2
+
+
+Graph4 <- ratio2 %>%
+  group_by(logratio < 0) %>%
+  top_n(15, abs(logratio)) %>%
+  ungroup() %>%
+  mutate(Term = reorder(bigram, logratio)) %>%
+  ggplot(aes(Term, logratio, fill = logratio < 0)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  labs(title="Comparing Log Odds Ratio 48 Hours 
+       Before Mass Shootings, 2007-2017",
+    y="log odds ratio (Republican/Democrat)") +
+  scale_fill_manual(name = "", labels = c("R", "D"), 
+                      values=c("red","blue"))+
+    scale_x_discrete(labels=c("job äôs" = "job's",
+                            "obama äôs" = "Obama's"))
+Graph4
+
+
+```
+#Comparing all graphs
+
+```{r}
+
+#Most used words comparison
+ggarrange(Graph1+ labs(title="Highest tfidf Bigrams After Shootings"),
+          Graph2+labs(title="Highest tfidf Bigrams Before Shootings"),
+          ncol = 1,
+          nrow = 2
+          )
+
+
+#Log odds ratio comparison
+ggarrange(Graph3+ labs(title="Log Odds Ratio(Republican/Democrat) After Shootings"),
+          Graph4+labs(title="Log Odds Ratio(Republican/Democrat) Before Shootings"),
+          ncol = 1,
+          nrow = 2
+          )
+```
+
+#Joining before and after shooting dataframes
+
+```{r}
+
+before_and_after <- full_join(Congress,Congress.Before)
+
+
+#Cleaning the before_and_after dataframe
+replace_reg <- "https://t.co/[A-Za-z\\d]+|http://[A-Za-z\\d]+|&amp;|&lt;|&gt;|RT|https"
+unnest_reg <- "([^A-Za-z_\\d#@']|'(?![A-Za-z_\\d#@]))"
+
+All_tokens<- before_and_after %>%
+  filter(!str_detect(text, "^[0-9]*$")) %>%
+  mutate(text = str_replace_all(text, replace_reg, "")) %>%
+  filter(!str_detect(text, '^"')) %>%
+  mutate(text = str_replace_all(text, "https://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
+  filter(!str_detect(text, "^RT")) %>%
+  unnest_tokens(output = word, input = text,token = "ngrams", n=2)%>%
+  anti_join(stop_words) 
+
+
+All_tokens <- All_tokens %>%
+  filter(!str_detect(word, "^@"))%>%
+  filter(!str_detect(word, "^#"))
+
+
+All_bigrams_separated <- All_tokens %>%
+  separate(word, c("word1", "word2"), sep = " ")
+
+All_bigrams_filtered <- All_bigrams_separated %>%
+   filter(!word1 %in% stop_words$word) %>%
+   filter(!word2 %in% stop_words$word)
+
+All_bigram_counts <- All_bigrams_filtered %>% 
+  count(word1, word2, sort = TRUE)
+All_bigram_counts
+
+All_bigrams_united <- All_bigrams_filtered %>%
+   unite(bigram, word1, word2, sep = " ")
+All_bigrams_united
+
+```
+#Words over time
+
+```{r}
+
+#Need to put back Date and Time together to use Floor Date
+
+#First correct the formatting for Date
+
+Tidy_All <- All_bigrams_united
+Tidy_All$Date <- mdy(Tidy_All$Date)
+
+#Unite Date and Time
+Tidy_All <- Tidy_All %>%
+  unite(timestamp, Date, Time, sep = "")
+
+#Correct the formatting for the united new column
+Tidy_All$timestamp <- ymd_hms(Tidy_All$timestamp)
+  
+  
+words_by_time <-Tidy_All %>%
+  mutate(time_floor = floor_date(timestamp, unit = "year")) %>%
+  count(time_floor, R_or_D, bigram) %>%
+  ungroup() %>%
+  group_by(R_or_D, time_floor) %>%
+  mutate(time_total = sum(n)) %>%
+  group_by(bigram) %>%
+  mutate(word_total = sum(n)) %>%
+  ungroup() %>%
+  rename(count = n) %>%
+  filter(word_total > 30)
+words_by_time
+
+#Create nested data
+nested_data <- words_by_time%>%
+  nest(-bigram, -R_or_D)
+nested_data
+
+#Nested models
+nested_models <- nested_data %>%
+  mutate(models = map(data, ~ glm(cbind(count, time_total) ~ time_floor, ., 
+                                  family = "binomial")))
+nested_models
+
+#Finding the statistically significant slopes
+slopes <- nested_models %>%
+  unnest(map(models, tidy)) %>%
+  filter(term == "time_floor") %>%
+  mutate(adjusted.p.value = p.adjust(p.value))
+
+top_slopes <- slopes %>% 
+  filter(adjusted.p.value < 0.01)
+top_slopes
+
+#Plot for Republicans
+Words_overtime_R <- words_by_time %>%
+  inner_join(top_slopes, by = c("bigram", "R_or_D")) %>%
+  filter(R_or_D == "R") %>%
+  ggplot(aes(time_floor, count/time_total, color = bigram)) +
+  geom_line(size = 1.3) +
+  labs(title="Words Used by Republicans Changing at A Moderately Significant Level 
+Over Time (48 Hours Before and 48 Hous After Mass Shootings, 2007-2017)
+       by Democrats",
+    x = "Year", y = "Word frequency")
+Words_overtime_R
+
+
+#Plot for Democrats
+Words_overtime_D <- words_by_time %>%
+  inner_join(top_slopes, by = c("bigram", "R_or_D")) %>%
+  filter(R_or_D == "D") %>%
+  ggplot(aes(time_floor, count/time_total, color = bigram)) +
+  geom_line(size = 1.3) +
+  labs(title="Words Used by Democrats Changing at A Moderately Significant Level 
+Over Time (48 Hours Before and After Mass Shootings, 2007-2017)
+       by Democrats",
+    x = "Year", y = "Word frequency")
+Words_overtime_D
+
+
+```
+
+#Building a dtm to find association
+```{r}
+
+#After Shooting word associations
+
+# build a corpus, and specify the source to be character vectors
+tweets_source <- VectorSource(Congress$text)
+myCorpus <- Corpus(tweets_source)
+myCorpus
+
+
+myCorpus <- tm_map(myCorpus, tolower)
+myCorpus <- tm_map(myCorpus, removePunctuation) 
+myCorpus <- tm_map(myCorpus, removeNumbers)
+removeURL <- function(x) gsub("http[[:alnum:]]*", "", x)
+myCorpus <- tm_map(myCorpus, removeURL) 
+myStopwords <- c(stopwords("english"))
+myCorpus <- tm_map(myCorpus, removeWords, myStopwords)
+myCorpus <- tm_map(myCorpus, stemDocument)
+
+tdm <- TermDocumentMatrix(myCorpus, control = list(wordLengths = c(1, Inf)))
+tdm
+
+findAssocs(tdm, "terror", 0.2)
+
+
+#Before Shooting word associations
+tweets_before <- VectorSource(Congress.Before$text)
+myCorpus2 <- Corpus(tweets_before)
+myCorpus2
+
+
+myCorpus2 <- tm_map(myCorpus2, tolower)
+myCorpus2 <- tm_map(myCorpus2, removePunctuation) 
+myCorpus2 <- tm_map(myCorpus2, removeNumbers)
+myCorpus2 <- tm_map(myCorpus2, removeURL) 
+myCorpus2 <- tm_map(myCorpus2, removeWords, myStopwords)
+myCorpus2 <- tm_map(myCorpus2, stemDocument)
+tdm2 <- TermDocumentMatrix(myCorpus2, control = list(wordLengths = c(1, Inf)))
+tdm2
+
+findAssocs(tdm2, "terror", 0.2)
+
+
+#Republican word associations after shooting
+
+tweets_republicans <- VectorSource(All.Republicans$text)
+myCorpus3 <- Corpus(tweets_republicans)
+myCorpus3
+
+
+myCorpus3 <- tm_map(myCorpus3, tolower)
+myCorpus3 <- tm_map(myCorpus3, removePunctuation) 
+myCorpus3 <- tm_map(myCorpus3, removeNumbers)
+myCorpus3 <- tm_map(myCorpus3, removeURL) 
+myCorpus3 <- tm_map(myCorpus3, removeWords, myStopwords)
+myCorpus3 <- tm_map(myCorpus3, stemDocument)
+tdm3 <- TermDocumentMatrix(myCorpus3, control = list(wordLengths = c(1, Inf)))
+tdm3
+
+Republican_words_association<- findAssocs(tdm3, "terror", 0.2) %>%
+  kable(caption = "Words correlated with the word terror at r>0.2 among Republicans",
+        col.names=c("r"))%>%
+  kable_styling(full_width = TRUE,bootstrap_options = "striped")%>%
+  footnote(number = "Footnote1; notonec refers to the hashtag NotOneCent. The hashtag was used during Iran nuclear negotions by those who opposed unfreezing Iran's assetts. ",)
+Republican_words_association
+
+#Democrat word associations after shooting
+tweets_democrats <- VectorSource(All.Democrats$text)
+myCorpus4 <- Corpus(tweets_democrats)
+myCorpus4
+
+
+myCorpus4 <- tm_map(myCorpus4, tolower)
+myCorpus4 <- tm_map(myCorpus4, removePunctuation) 
+myCorpus4 <- tm_map(myCorpus4, removeNumbers)
+myCorpus4 <- tm_map(myCorpus4, removeURL) 
+myCorpus4 <- tm_map(myCorpus4, removeWords, myStopwords)
+myCorpus4 <- tm_map(myCorpus4, stemDocument)
+tdm4 <- TermDocumentMatrix(myCorpus4, control = list(wordLengths = c(1, Inf)))
+tdm4
+
+Democrats_words_association <- findAssocs(tdm4, "terror", 0.2)%>%
+  kable(caption = "Words correlated with the word terror at r>0.2 among Democrats",
+        col.names = c("r"))%>%
+  kable_styling(full_width = TRUE)
+Democrats_words_association
+
+#Republican word association before shooting
+tweets_republicans_before <- VectorSource(All.Repblicans.Before$text)
+myCorpus5 <- Corpus(tweets_republicans_before)
+myCorpus5
+
+
+myCorpus5 <- tm_map(myCorpus5, tolower)
+myCorpus5 <- tm_map(myCorpus5, removePunctuation) 
+myCorpus5 <- tm_map(myCorpus5, removeNumbers)
+myCorpus5 <- tm_map(myCorpus5, removeURL) 
+myCorpus5 <- tm_map(myCorpus5, removeWords, myStopwords)
+myCorpus5 <- tm_map(myCorpus5, stemDocument)
+tdm5 <- TermDocumentMatrix(myCorpus5, control = list(wordLengths = c(1, Inf)))
+tdm5
+
+Republican_words_association_before<- findAssocs(tdm5, "terror", 0.2) %>%
+  kable(caption = "Words correlated with the word terror at r>0.2 among Republicans",
+        col.names=c("r"))%>%
+  kable_styling(full_width = TRUE)%>%
+  footnote(number = c("Footnote1; franc refers to terrorist attack in Nice, France. The attack occured on July 14,2016 exactly 48 hours before the Bouton Rouge Mass Shooting in the U.S.","Footnote2; notonec refers to the hashtag NotOneCent. The hashtag was used during Iran nuclear negotions by those who opposed unfreezing Iran's assetts. "),)
+Republican_words_association_before
+
+
+#Democrats before shooting
+tweets_democrats_before <- VectorSource(All.Democrats.Before$text)
+myCorpus6 <- Corpus(tweets_democrats_before)
+myCorpus6
+
+
+myCorpus6 <- tm_map(myCorpus6, tolower)
+myCorpus6 <- tm_map(myCorpus6, removePunctuation) 
+myCorpus6 <- tm_map(myCorpus6, removeNumbers)
+myCorpus6 <- tm_map(myCorpus6, removeURL) 
+myCorpus6 <- tm_map(myCorpus6, removeWords, myStopwords)
+myCorpus6 <- tm_map(myCorpus6, stemDocument)
+tdm6 <- TermDocumentMatrix(myCorpus6, control = list(wordLengths = c(1, Inf)))
+tdm6
+
+Democrats_words_association_before <- findAssocs(tdm6, "terror", 0.2)%>%
+  kable(caption = "Words correlated with the word terror at r>0.2 among Democrats",
+        col.names = c("r"))%>%
+  kable_styling(full_width = TRUE)%>%
+  footnote(number = "Footnote1; nice refers to terrorist attack in Nice, France. The attack occured on July 14,2016 exactly 48 hours before the Bouton Rouge Mass Shooting in the U.S. ",)
+Democrats_words_association_before
+
+```
+
+#Sentiment Analysis
+Need my tokens to be words instead of bigrams for sentiment analysis. So i change my tokens to words first
+
+```{r}
+
+#Congress After Shooting
+replace_reg <- "https://t.co/[A-Za-z\\d]+|http://[A-Za-z\\d]+|&amp;|&lt;|&gt;|RT|https"
+unnest_reg <- "([^A-Za-z_\\d#@']|'(?![A-Za-z_\\d#@]))"
+
+Congress_tokens2 <- Congress %>%
+  filter(!str_detect(text, "^[0-9]*$")) %>%
+  mutate(text = str_replace_all(text, replace_reg, "")) %>%
+  filter(!str_detect(text, '^"')) %>%
+  mutate(text = str_replace_all(text, "https://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
+  filter(!str_detect(text, "^RT")) %>%
+  unnest_tokens(output = word, input = text)%>%
+  anti_join(stop_words) 
+
+
+Congress_sentiment_after <- Congress_tokens2%>%
+  inner_join( get_sentiments("afinn"))
+
+#Graphing Congress After Shooting Sentiments
+Congress_sentiment_graph1 <- Congress_sentiment_after%>%
+  group_by(R_or_D)%>%
+    count(score, sort = TRUE) %>%
+  ggplot(aes(score, n))+
+  geom_point(aes(color=R_or_D))+
+  geom_smooth(method = "loess")+
+  coord_flip()+
+  labs(title="Sentiment Scores
+       48 Hourse After Mass Shootings, 2007-2017",
+       x="Afinn Sentiment Score",
+       y="Number of Tweets")+
+  scale_colour_manual(labels = c("D", "R"), 
+                     values=c("blue","red"))+
+    theme(legend.title = element_blank())
+Congress_sentiment_graph1
+ 
+#Congress Before Shooting
+Congress_before_tokens2<- Congress.Before %>%
+  filter(!str_detect(text, "^[0-9]*$")) %>%
+  mutate(text = str_replace_all(text, replace_reg, "")) %>%
+  filter(!str_detect(text, '^"')) %>%
+  mutate(text = str_replace_all(text, "https://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
+  filter(!str_detect(text, "^RT")) %>%
+  unnest_tokens(output = word, input = text)%>%
+  anti_join(stop_words) 
+
+Congress_sentiment_before <- Congress_before_tokens2%>%
+  inner_join(get_sentiments("afinn"))
+
+
+#Graphing Congress Before Shooting Sentiments
+Congress_sentiment_graph2 <- Congress_sentiment_before%>%
+  group_by(R_or_D)%>%
+    count(score, sort = TRUE) %>%
+  ggplot(aes(score, n))+
+  geom_point(aes(color=R_or_D))+
+  geom_smooth(method = "loess")+
+  coord_flip()+
+  labs(title="Sentiment Scores
+       48 Hourse Before Mass Shootings, 2007-2017",
+       x="Afinn Sentiment Score",
+       y="Number of Tweets")+
+  scale_colour_manual(labels = c("D", "R"), 
+                     values=c("blue","red"))+
+    theme(legend.title = element_blank())
+Congress_sentiment_graph2
+
+#Comparison
+ggarrange(Congress_sentiment_graph1+labs(title="After shooting"),Congress_sentiment_graph2+labs(title="Before shooting"),
+          ncol = 1,
+          nrow = 2
+          )
+
+```
+
+
+
+#Logistic Regression
+```{r}
+
+#Joining All congress(both before and after) with shooting dataframe
+df <- left_join(before_and_after,Shootings)
+tidy_df <- df%>%
+  select(-9,-10,-11,-12,-13,-15,-16)
+
+#Extracting keywords from the tweet texts
+keywords <- df$text[grep("[Tt]error|[Tt]errorist|[Tt]errorists|
+                                      [Tt]errorism", df$text)]
+
+tidy_keywords <- df%>%
+  filter(text %in%keywords)
+tidy_keywords
+
+#I then saved it as an excel file to read each individual tweet to make sure they were related to the shooting
+#write_as_csv(tidy_keywords,"keywords.csv")
+
+tidy_keywords2 <- read_csv("keywords.csv")
+
+#Changing mentioning terrror from character to a factor (0 means not mentioning terror and 1 means mentioning terror)
+tidy_keywords2$mentions_terror <- as.numeric(tidy_keywords2$mentions_terror)
+
+
+#Merging dataframes
+df2 <-merge(tidy_df,tidy_keywords2, all=TRUE)
+
+#replacing na values for mentions_terror with 0
+df2$mentions_terror[is.na(df2$mentions_terror)] <- 0
+
+
+#Plotting cases where terrorism is mentioned
+df3 <- subset(df2, !is.na(case))
+df3$case <- gsub("Orlando nightclub massacre","Inside",df3$case)
+
+df3%>%
+  ggplot(aes(case, fill=R_or_D))+
+  geom_bar(stat="count")+
+  scale_x_discrete(labels=c("Inside"="Shooting Specific Event"))+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(title="Cases Where Terrorism Was Used by Congress Members",
+       y="Number of Times",
+       x="Type of Case")+
+  scale_fill_manual(values = c("blue","red"),
+                    breaks=c("D","R",
+                             labels=c("D","R")))+
+  theme(legend.title = element_blank())
+  
+
+#First Regression: Association between mentioning terror, party ID and nominate scores
+
+#Changing party id to a factor
+df2$R_or_D <- as.factor(df2$R_or_D)
+
+
+regression1 <- glm(mentions_terror ~ R_or_D+Nominate_dim2, 
+                   data = df2,family = "binomial")
+summary(regression1)
+
+#Adding predictions 
+
+terrorism<- df2 %>%
+  data_grid(R_or_D,Nominate_dim2)%>%
+  add_predictions(regression1)
+terrorism
+
+#Plotting first model
+
+ggplot(terrorism,
+       aes(Nominate_dim2, pred))+
+  geom_smooth(aes(color=R_or_D))+
+  scale_colour_manual(labels = c("D", "R"), 
+                      values=c("blue","red"))+
+  labs(title="Relationship Between Probability of Mentioning Terrorism, 
+       Party ID, and Ideology",
+       x="Ideology(Nominate Score)",
+       y="Log Odds Ratio of Mentioning Terrorism")+
+   theme(legend.title = element_blank())
+
+
+#Second regression: Association between mentioning terror in shooting related cases and party ID, nominate scores, and shooter's race
+
+regression2 <- glm(Shooting_related_terrorism~R_or_D+Nominate_dim2+
+                race+race*R_or_D+ race*Nominate_dim2, 
+                data = df3,family=binomial(link = "logit"))
+summary(regression2)
+
+#Validating My Model
+
+set.seed(1234)
+df3_split <- resample_partition(df3, c(test=0.5,train=0.5))
+df3_train <- as_tibble(df3_split$train)
+df3_test <- as_tibble(df3_split$test)
+
+mod_fit1 <- glm(Shooting_related_terrorism~R_or_D+Nominate_dim2+
+                race+race*R_or_D+ race*Nominate_dim2, 
+                data = df3_train,family= "binomial")
+
+mod_fit2 <-glm(Shooting_related_terrorism~R_or_D+Nominate_dim2+race, 
+                data = df3_train,family="binomial")
+
+lrtest(mod_fit1, mod_fit2)
+
+#OR
+pR2(mod_fit1)
+
+#MCFADDEN=0.95 ....>good Model
+
+#Adding predictions 
+df3$R_or_D <- as.factor(df3$R_or_D)
+df3$race <- as.factor(df3$race)
+
+terrorism2<- df3 %>%
+  data_grid(R_or_D,Nominate_dim2, race,.model = regression2)%>%
+  add_predictions(regression2)
+terrorism2
+
+terrorism2 <- terrorism2%>%
+  filter(!is.na(race))
+
+str(terrorism2)
+
+ggplot(terrorism2,
+       aes(Nominate_dim2,pred, color=R_or_D))+
+  geom_smooth()+
+  facet_wrap(~race)+
+  labs(title="Relationship Between Calling a shooting Terrorism,
+Shooter's Race, Party ID, and Ideology ",
+       x="Ideology(Nominate Score)",
+       y="Log Odds Ratio of Calling a Shooting Terrorism",
+       caption="Other refetrs to anyone of Middle-Eastern/Pakistani background")+
+    scale_colour_manual(labels = c("D", "R"), 
+                     values=c("blue","red"))+
+    theme(legend.title = element_blank())
+
+```

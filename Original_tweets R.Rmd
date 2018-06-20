@@ -1,0 +1,1050 @@
+---
+title: "House.R"
+author: "Golnar Babakhani Teimouri"
+date: "May 8, 2018"
+output: html_document
+---
+
+
+```{r setup}
+knitr::opts_chunk$set(
+    warning = FALSE, 
+  cache = TRUE,
+  message = FALSE,
+  error = FALSE
+)
+
+#Loading all needed libraries
+
+library(twitteR)
+library(rtweet)
+library(tidytext)
+library(tidyverse)
+library(lubridate)
+library(ROAuth)
+
+app_name<-"MAThesis_Twitter"
+Consumer_key<-"vkbhyDfwMZplrKormGK0dLm11"
+Consumer_Secret<-"qiFvesJhDRY77F02dYHBVABfdG2VUvjZTijh8Fap9VDjkjLrbN"
+token <-create_token(app_name, Consumer_key, Consumer_Secret)
+
+#save token to home directory
+path_to_token <-file.path(path.expand("~"),".twitter_token.rds")
+saveRDS(token, path_to_token)
+
+#create env variable TWITTER_PAT 
+env_var <-paste0("TWITTER_PAT=",path_to_token)
+
+#Save as .Renviron file 
+cat(env_var, file = file.path(path.expand("~"),".Renviron"),
+    fill = TRUE, append = TRUE)
+readRenviron("~/.Renviron")
+
+```
+
+## Tidyuing
+
+```{r }
+House <- read_csv("House.members.csv")
+ID <- House %>%
+  select("Twitter ID")
+
+#House Republican Dataframe
+House.R <- House %>%
+  filter(`Republican or Democrat` =="R") 
+write.csv(House.R, "House.R.csv")
+
+#House Democrat Dataframe
+House.D <- House %>%
+  filter(`Republican or Democrat`=="D")
+write.csv(House.D, "House.D.csv")
+
+#Senate
+Senate <- read_csv("Senate.Members.csv")
+
+#Congress
+Congress <- read_csv("BothMembers.csv")
+Congress %>%
+  count(Tweets)
+
+```
+#House Republicans
+
+```{r}
+#House republicans Alabama
+House.R.AL <- get_timelines(c("RepMikeRogersAL","Robert_Aderholt",
+                               "BachusAL06","Rep_P_Griffith",
+                               "RepMarthaRoby","RepMoBrooks",
+                               "RepByrne","USRepGaryPalmer"),
+                             n=3200)
+table(House.R.AL$screen_name)
+
+
+#House republicans Alaska
+House.R.AK <- get_timeline("repdonyoung", n=3200)
+
+#House republicans Arizona
+House.R.AZ <- get_timelines(c("repdonyoung","salmoncongress",
+                              "RepMcSally", "RepJohnShadegg",
+                              "RepGosar","RepDavid"), 
+                            n=3200)
+table(House.R.AZ$screen_name)
+
+#House republicans Arkansas
+House.R.AR <- get_timelines(c("RepRickCrawford","LtGovTimGriffin",
+                              "rep_stevewomack", "RepFrenchHill",
+                              "RepWesterman"),
+                            n=3200)
+table(House.R.AR$screen_name)
+#House republicans California
+House.R.CA <- get_timelines(c("RepDanLungren", "RepRadanovich",
+                            "DevinNunes","GOPLeader",
+                            "RepEdRoyce",
+                            "KenCalvert","MaryBonoUSA",
+                            "DanaRohrabacher","DarrellIssa",
+                            "BilbrayCA50","Rep_Hunter",
+                            "RepMcClintock","RepJeffDenham",
+                            "RepLaMalfa", "RepPaulCook",
+                            "RepMimiWalters", "RepDavidValadao"),
+                            n=3200)
+table(House.R.CA$screen_name)
+#House republicans Colorado
+House.R.CO <- get_timelines(c("RepDLamborn","RepMikeCoffman",
+                              "RepTipton", "RepKenBuck"), n=3200)
+table(House.R.CO$screen_name)
+
+#House republicans Conneticut: NA
+#House republicans Delaware: NA
+#House republicans Florida
+House.R.FL <- get_timelines(c("RepJeffMiller","AnderCrenshaw",
+                              "RepCliffStearns","RepGusBilirakis",
+                              "adamputnam","VernBuchanan",
+                              "RepConnieMack","congbillposey",
+                              "RosLehtinen","TomRooney",
+                              "Rep_Southerland","RepRichNugent",
+                              "RepWebster","RepDennisRoss",
+                              "RepTedYoho","RepDeSantis",
+                              "USRepDavidJolly","RepCurtClawson",
+                              "MarioDB","AllenWest",
+                              "RepSandyAdams","RepRivera",
+                              "RepCurbelo","treyradel"),
+                            n=3200)
+
+table(House.R.FL$screen_name)
+#House republicans Georgia
+House.R.GA <- get_timelines(c("JackKingston","PaulBrounMD",
+                              "DrPhilGingrey","RepTomGraves",
+                              "RepRobWoodall","AustinScottGA08",
+                              "RepDougCollins","RepBuddyCarter",
+                              "CongressmanHice","RepLoudermilk",
+                              "RepRickAllen"), n=3200)
+table(House.R.GA$screen_name)
+
+#House republicans Hawaii: NA
+#House republicans Idaho
+House.R.ID <- get_timelines(c("CongMikeSimpson","Raul_Labrador",
+                              "PeterRoskam"), n=3200)
+table(House.R.ID$screen_name)
+
+#House republicans Illinois
+House.R.IL <- get_timelines(c("WalshFreedom","RepDold",
+                              "RepShimkus","aaronschock",
+                              "RepKinzinger","RepHultgren",
+                              "RodneyDavis","RepBost",
+                              "RepLaHood"), n=3200)
+table(House.R.IL$screen_name)
+
+
+#House republicans Indiana
+House.R.IN <- get_timelines(c("RepLukeMesser", "SusanWBrooks",
+                              "RepWalorski","RepLarryBucshon",
+                              "ToddRokita","RepStutzman",
+                              "mike_pence"), n=3200)
+table(House.R.IN$screen_name)
+
+#House republicans Iowa
+House.R.IA <- get_timelines(c("RepDavidYoung","RepRodBlum",
+                              "SteveKingIA"), n=3200)
+table(House.R.IA$screen_name)
+
+#House republicans Kansas
+House.R.KS <- get_timelines(c("RepKevinYoder","RepLynnJenkins",
+                              "CongHuelskamp"), n=3200)
+table(House.R.KS$screen_name)
+
+#House republicans Kentucky
+
+House.R.KY <- get_timelines(c("KYComer","RepAndyBarr",
+                              "RepThomasMassie","RepGuthrie",
+                              "RepEdWhitfield"), n=3200)
+table(House.R.KY$screen_name)
+
+#House republicans Louisiana
+House.R.LA <- get_timelines(c("SteveScalise","RepGarretGraves",
+                              "RepAbraham","AGJeffLandry",
+                              "RepFleming"), n=3200)
+table(House.R.LA$screen_name)
+
+#House republicans Maine
+House.R.ME <- get_timeline("RepPoliquin", n=3200)
+
+#House republicans Maryland
+House.R.MD <- get_timeline("RepAndyHarrisMD", n=3200)
+
+#House republicans Massachusetts:NA
+
+#House republicans Michigan
+House.R.MI <- get_timelines(c("RepMoolenaar","repdavetrott",
+                              "RepDanKildee","justinamash",
+                              "RepHuizenga","CongressmanDan",
+                              "ThadMcCotter","CandiceMiller",
+                              "RepMikeRogers","RepWalberg",
+                              "RepFredUpton","petehoekstra"),
+                            n=3200)
+table(House.R.MI$screen_name)
+
+#House republicans Minnesota
+House.R.MN <- get_timelines(c("repjohnkline","RepErikPaulsen",
+                              "MicheleBachmann"),n=3200)
+table(House.R.MN$screen_name)
+
+#House republicans Mississippi
+House.R.MS <- get_timelines(c("RepTrentKelly","CongPalazzo",
+                              "GreggHarper"), n=3200)
+table(House.R.MS$screen_name)
+
+##House republicans Missouri
+House.R.MO <- get_timelines(c("RepAnnWagner","RepJasonSmith",
+                              "USRepLong","RepHartzler",
+                              "RepBlainePress","RepSamGraves",
+                              "ToddAkin"), n=3200)
+table(House.R.MO$screen_name)
+
+#House republicans Montana
+House.R.MT <- get_timeline("RepRyanZinke", n=3200)
+
+#House republicans Nebraska
+House.R.NE <- get_timeline(c("RepAdrianSmith","LEETERRYNE",
+                             "JeffFortenberry"), n=3200)
+table(House.R.NE$screen_name)
+
+#House republicans Nevada
+House.R.NV <- get_timelines(c("RepHardy","MarkAmodeiNV2"), n=3200)
+table(House.R.NV$screen_name)
+
+#House republicans New Hamshire
+House.R.NH <- get_timeline("RepFrankGuinta", n=3200)
+
+#House republicans New Jersey
+House.R.NJ <- get_timelines(c("RepLanceNJ7","USRepRodney",
+                              "RepTomMacArthur","RepJonRunyan",
+                              "RepGarrett","RepChrisSmith",
+                              "RepLoBiondo"),
+                            n=3200)
+table(House.R.NJ$screen_name)
+
+#House republicans New Mexico
+House.R.NM <- get_timeline("RepStevePearce", n=3200)
+
+##House republicans New York
+House.R.NY <- get_timelines(c("RepChrisCollins","RepStefanik",
+                              "RepJohnKatko","RepPeteKing",
+                              "RepRichardHanna","RepTomReed",
+                              "RepChrisGibson","NanHayworth",
+                              "RepDanDonovan","RepLeeZeldin"), 
+                            n=3200)
+
+table(House.R.NY$screen_name)
+
+#House republicans North Carolina
+House.R.NC <- get_timelines(c("RepDavidRouzer","RepMarkWalker",
+                              "RepHolding","RepMarkMeadows",
+                              "RepPittenger","RepRichHudson",
+                              "PatrickMcHenry","HowardCoble",
+                              "RepReneeEllmers","virginiafoxx",
+                              "RepWalterJones"),n=3200)
+table(House.R.NC$screen_name)
+
+#House republicans North Dakota
+House.R.ND <- get_timeline("RepKevinCramer", n=3200)
+
+#House republicans Ohio
+House.R.OH <- get_timelines(c("RepJimRenacci","RepSteveStivers",
+                              "RepDaveJoyce","PatTiberi",
+                              "WarrenDavidson","RepBobGibbs",
+                              "SteveAustria","SpeakerBoehner",
+                              "RepBradWenstrup","RepBillJohnson",
+                              "boblatta","Jim_Jordan",
+                              "RepMikeTurner","RepSteveChabot"),n=3200)
+table(House.R.OH$screen_name)
+
+#House republicans Oklahoma
+House.R.OK <- get_timelines(c("RepRussell","RepMullin",
+                              "RepJBridenstine","GovMaryFallin",
+                              "TomColeOK04","RepFrankLucas"), n=3200)
+table(House.R.OK$screen_name)
+
+#House republicans Oregon
+House.R.OR <- get_timeline("repgregwalden", n=3200)
+
+#House republicans Pennsylvania
+House.R.PA <- get_timelines(c("KeithRothfus","RepLouBarletta",
+                              "RepCharlieDent","RepRyanCostello",
+                              "RepTomMarino","RepFitzpatrick",
+                              "RepBillShuster", "MikeKellyPA",
+                             "CongressmanGT"), n=3200)
+
+table(House.R.PA$screen_name)
+
+#House republicans Rhode Island:NA
+
+#House republicans South Carolina
+House.R.SC <- get_timelines(c("RepTomRice","TGowdySC",
+                              "RepJeffDuncan","RepBarrett",
+                              "RepJoeWilson"), n=3200)
+table(House.R.SC$screen_name)
+
+#House republicans South Dakota
+House.R.SD <- get_timelines("RepKristiNoem", n=3200)
+
+#House republicans Tennessee
+House.R.TN <- get_timelines(c("RepDianeBlack","RepFincherTN08",
+                              "MarshaBlackburn","DesJarlaisTN04",
+                              "RepChuck","DrPhilRoe",
+                              "RepJohnDuncanJr"), n=3200)
+table(House.R.TN$screen_name)
+#House republicans Texas
+House.R.TX <- get_timelines(c("RepBrianBabin","PeteSessions",
+                              "JudgeCarter","HurdOnTheHill",
+                              "RepRWilliams","RepPeteOlson",
+                              "michaelcburgess","RepKenMarchant",
+                              "LamarSmithTX21","RepBillFlores",
+                              "RandyNeugebauer","TXRandy14",
+                              "RonPaul","MacTXPress"), n=3200)
+table(House.R.TX$screen_name)
+
+House.R.TX2 <- get_timelines(c("RepKayGranger","ConawayTX11",
+                              "RepMcCaul","RepKevinBrady",
+                              "CongCulberson","RepJoeBarton",
+                              "RepRatcliffe","RepHensarling",
+                              "RalphHallPress","SamsPressShop",
+                              "JudgeTedPoe","replouiegohmert"),
+                            n=3200)
+table(House.R.TX2$screen_name)
+
+#House republicans Utah
+House.R.UT <- get_timelines(c("RepMiaLove","RepChrisStewart",
+                              "jasoninthehouse","RepRobBishop",
+                              ),n=3200)
+table(House.R.UT$screen_name)
+
+#House republicans Vermont:NA
+
+#House republicans Virginia
+House.R.VA <- get_timeline(c("RepComstock","RepDaveBrat",
+                             "RepMGriffith","RepRobertHurt",
+                             "RepScottRigell","RepWOLFPress",
+                             "EricCantor","RepGoodlatte",
+                             "Randy_Forbes","RobWittman"), n=3200)
+table(House.R.VA$screen_name)
+
+#House republicans Washington
+House.R.WA <- get_timelines(c("RepDennyHeck","HerreraBeutler",
+                              "davereichert","cathymcmorris",
+                              "DocHastings"), n=3200)
+table(House.R.WA$screen_name)
+#House republicans West virginia
+House.R.WV <- get_timelines(c("RepEvanJenkins","RepAlexMooney",
+                              "RepMcKinley"), n=3200)
+table(House.R.WV$screen_name)
+
+#House republicans Wisconsin
+House.R.WI <- get_timelines(c("SpeakerRyan","JimPressOffice",
+                              "RepSeanDuffy","RepRibble",
+                              "RepGrothman"), n=3200)
+table(House.R.WI$screen_name)
+
+#House republicans Wyoming
+House.R.WY <- get_timeline("CynthiaLummis", n=3200)
+
+# REMOVED CA:eltongallegly24, NY:annmbuerkle, PA:RepMeehan
+
+
+
+#SAVE ALL HOUSE REPUBLICANS
+write_as_csv(House.R.AL, "House.R.AL.csv")
+write_as_csv(House.R.AK, "House.R.AK.csv")
+write_as_csv(House.R.AR, "House.R.AR.csv")
+write_as_csv(House.R.AZ, "House.R.AZ.csv")
+write_as_csv(House.R.CA, "House.R.CA.csv")
+write_as_csv(House.R.CO, "House.R.CO.csv")
+write_as_csv(House.R.FL, "House.R.FL.csv")
+write_as_csv(House.R.GA, "House.R.GA.csv")
+write_as_csv(House.R.IA, "House.R.IA.csv")
+write_as_csv(House.R.ID, "House.R.ID.csv")
+write_as_csv(House.R.IL, "House.R.IL.csv")
+write_as_csv(House.R.IN, "House.R.IN.csv")
+write_as_csv(House.R.KS, "House.R.KA.csv")
+write_as_csv(House.R.KY, "House.R.KY.csv")
+write_as_csv(House.R.LA, "House.R.LA.csv")
+write_as_csv(House.R.MD, "House.R.MD.csv")
+write_as_csv(House.R.ME, "House.R.ME.csv")
+write_as_csv(House.R.MI, "House.R.MI.csv")
+write_as_csv(House.R.MN, "House.R.MN.csv")
+write_as_csv(House.R.MO, "House.R.MO.csv")
+write_as_csv(House.R.MS, "House.R.MS.csv")
+write_as_csv(House.R.MT, "House.R.MT.csv")
+write_as_csv(House.R.NE, "House.R.NE.csv")
+write_as_csv(House.R.NH, "House.R.NH.csv")
+write_as_csv(House.R.NJ, "House.R.NJ.csv")
+write_as_csv(House.R.NV, "House.R.NV.csv")
+write_as_csv(House.R.NM, "House.R.NM.csv")
+write_as_csv(House.R.NY, "House.R.NY.csv")
+write_as_csv(House.R.NC, "House.R.NC.csv")
+write_as_csv(House.R.ND, "House.R.ND.csv")
+write_as_csv(House.R.OH, "House.R.OH.csv")
+write_as_csv(House.R.OK, "House.R.OK.csv")
+write_as_csv(House.R.OR, "House.R.OR.csv")
+write_as_csv(House.R.PA, "House.R.PA.csv")
+write_as_csv(House.R.SC, "House.R.SC.csv")
+write_as_csv(House.R.SD, "House.R.SD.csv")
+write_as_csv(House.R.TN, "House.R.TN.csv")
+write_as_csv(House.R.TX, "House.R.TX.csv")
+write_as_csv(House.R.TX2,"House.R.TX2.csv")
+write_as_csv(House.R.UT, "House.R.UT.csv")
+write_as_csv(House.R.VA, "House.R.VA.csv")
+write_as_csv(House.R.WA, "House.R.WA.csv")
+write_as_csv(House.R.WV, "House.R.WV.csv")
+write_as_csv(House.R.WI, "House.R.WI.csv")
+write_as_csv(House.R.WY, "House.R.WY.csv")
+
+
+
+```
+
+#House Democrats
+```{r}
+#House democrats alabama
+House.D.AL <- get_timelines(c("ArturDavis", "RepTerriSewell"),
+                            n=3200)
+table(House.D.AL$screen_name)
+
+#House democrats Arizona
+House.D.AZ <- get_timelines(c("RepRaulGrijalva","GabbyGiffords",
+                              "Ann_Kirkpatrick","RepSinema",
+                             "RepRubenGallego"), n=3200)
+table(House.D.AZ$screen_name)
+#House democrats Arkansas:NA
+#House democrats California
+House.D.CA <- get_timelines(c("NormaJTorres", "tedlieu",
+                            "RepDeSaulnier","RepScottPeters",
+                            "RepJuanVargas","RepLowenthal",
+                            "RepMarkTakano","CongressmanRuiz",
+                            "Negrete_McLeod","RepCardenas",
+                            "JuliaBrownley26","RepSwalwell",
+                            "RepBera","RepHuffman"), n=3200)
+table(House.D.CA$screen_name)
+                            
+House.D.CA2 <- get_timelines(c("SupJaniceHahn","RepKarenBass",
+                            "RepJudyChu","RepGaramendi",
+                            "RepSusanDavis","LorettaSanchez",
+                            "RepLindaSanchez","gracenapolitano",
+                            "RepMaxineWaters","RepRoybalAllard",
+                            "HildaSolis","AGBecerra",
+                            "WaxmanClimate","BradSherman"), n=3200)
+table(House.D.CA2$screen_name)
+
+House.D.CA3 <- get_timelines(c("RepAdamSchiff","RepLoisCapps",
+                            "RepJimCosta","RepCardoza",
+                            "RepZoeLofgren","RepMikeHonda",
+                            "RepAnnaEshoo","RepSpeier",
+                            "RepMcNerney","RepBarbaraLee",
+                            "NancyPelosi","DorisMatsui",
+                            "RepThompson"), n=3200)
+table(House.D.CA3$screen_name)
+
+#House democrats Colorado
+House.D.CO <- get_timelines(c("BetsyMarkey","RepJaredPolis",
+                              "RepPerlmutter","RepDianaDeGette"),
+                            n=3200)
+table(House.D.CO$screen_name)
+
+#House democrats Connecticut
+House.D.CT <- get_timelines(c("RepJohnLarson","RepJoeCourtney",
+                              "rosadelauro","jahimes",
+                              "RepEsty"), n=3200)
+table(House.D.CT$screen_name)
+
+#House democrats Delaware
+House.D.DE <- get_timelines("JohnCarneyDE", n=3200)
+
+#House democrats Florida
+House.D.FL <- get_timelines(c("USRepKCastor", "AlanGrayson",
+                              "DWStweets","RepTedDeutch",
+                              "RepWilson","PatrickMurphyFL",
+                              "RepHastingsFL","GwenGraham",
+                              "RepLoisFrankel","RepJoeGarcia"),
+                            n=3200)
+table(House.D.FL$screen_name)
+
+#House democrats Georgia
+House.D.GA <- get_timelines(c("repdavidscott","repjohnlewis",
+                              "RepHankJohnson","SanfordBishop"),
+                            n=3200)
+table(House.D.GA$screen_name)
+
+#House democrats Hawaii
+House.D.HI <- get_timelines(c("neilabercrombie","RepHanabusa",
+                              "TulsiPress","RepMarkTakai"),
+                              n=3200)
+table(House.D.HI$screen_name)
+
+#House democrats Idaho: NA
+#House democrats: IL
+House.D.IL <- get_timelines(c("RepBobbyRush","RepLipinski",
+                              "RepGutierrez","janschakowsky",
+                              "RepMikeQuigley","RepRobinKelly",
+                              "RepDannyDavis",
+                              "RepSchneider","RepBillFoster",
+                              "RepCheri"), n=3200)
+table(House.D.IL$screen_name)
+
+#House democrats Indiana
+House.D.IN <- get_timelines(c("RepAndreCarson","RepVisclosky"),
+                            n=3200)
+table(House.D.IN$screen_name)
+
+#House democrats IOWA
+House.D.IA <- get_timelines(c("BruceBraley","daveloebsack",
+                              "LeonardBoswell"), n=3200)
+table(House.D.IA$screen_name)
+
+#House democrats kansas: NA
+#House democrats Kentucky
+House.D.KY <- get_timeline("RepJohnYarmuth", n=3200)
+
+#House democrats Lousiana
+House.D.LA <- get_timeline("RepRichmond", n=3200)
+
+#House democrats Maine
+House.D.ME <- get_timelines(c("MikeHMichaud", "chelliepingree"),
+                           n=3200)
+table(House.D.ME$screen_name)
+
+#House democrats Maryland
+House.D.MD <- get_timelines(c("RepJohnDelaney","repdonnaedwards",
+                              "RepCummings","WhipHoyer",
+                              "RepSarbanes","Call_Me_Dutch"),
+                            n=3200)
+table(House.D.MD$screen_name)
+
+#House democrats Massachusetts
+House.D.MA <- get_timelines(c("RepRichardNeal","RepMcGovern",
+                              "BarneyFrank", "nikiinthehouse",
+                              "RepTierney","RepMikeCapuano",
+                              "RepStephenLynch","USRepKeating",
+                              "RepJoeKennedy","RepKClark",
+                              "sethmoulton"), n=3200)
+table(House.D.MA$screen_name)
+
+#House democrats Michigan
+House.D.MI <- get_timelines(c("RepJohnConyers","JohnDingell",
+                              "RepDebDingell",
+                              "RepLawrence"), n=3200)
+table(House.D.MI$screen_name)
+
+#House democrats Minnesota
+House.D.MN <- get_timelines(c("RepTimWalz", "BettyMcCollum04",
+                              "keithellison","JimOberstar",
+                              "USRepRickNolan"), n=3200)
+table(House.D.MN$screen_name)
+
+#House democrats Mississippi
+House.D.MS <- get_timeline("BennieGThompson", n=3200)
+
+#House democrats Missouri
+House.D.MO <- get_timelines(c("repcleaver", "russcarnahan",
+                              "LacyClayMO1"), n=3200)
+table(House.D.MS$screen_name)
+
+#House democrats Montana: NA
+#House democrats Nebraska
+House.D.NE <- get_timeline("RepBradAshford", n=3200)
+
+#House democrats Nevada
+House.D.NV <- get_timelines(c("repdinatitus", "StevenHorsford"),
+                            n=3200)
+table(House.D.NV$screen_name)
+
+#House democrats New Hampshire
+House.D.NH <- get_timelines(c("RepSheaPorter", "RepAnnieKuster"),
+                            n=3200)
+table(House.D.NH$screen_name)
+
+#House democrats New Jersey
+
+House.D.NJ <- get_timelines(c("RepBonnie","RepDonaldPayne",
+                              "RepSires", "BillPascrell",
+                              "FrankPallone","DonaldNorcross"),
+                            n=3200)
+table(House.D.NJ$screen_name)
+
+#House democrats New Mexico
+House.D.NM <- get_timelines(c("RepLujanGrisham","repbenraylujan"),
+                            n=3200)
+table(House.D.NM$screen_name)
+
+#House democrats New york
+House.D.NY <- get_timelines(c("BillOwensNY","louiseslaughter",
+                              "RepBrianHiggins","RepPaulTonko",
+                              "RepSeanMaloney","RepMaloney",
+                              "RepJeffries","NydiaVelazquez",
+                              "RepYvetteClarke","NitaLowey",
+                              "RepEliotEngel","RepJoseSerrano",
+                              "cbrangel","RepGraceMeng"),n=3200)
+table(House.D.NY$screen_name)
+                              
+House.D.NY2 <- get_timelines(c("EdTowns","RepJerryNadler",
+                              "repjoecrowley","RepKathleenRice",
+                              "RepGregoryMeeks","carolynmccarthy",
+                              "RepGaryAckerman","RepSteveIsrael",
+                              "TimBishopNY"), n=3200)
+table(House.D.NY2$screen_name)
+
+#House democrats North Carolina
+House.D.NC <- get_timelines(c("RepAdams","RepDavidEPrice",
+                              "GKButterfield"), n=3200)
+table(House.D.NC$screen_name)
+
+#House democrats North Dakota: NA
+
+#House democrats Ohio
+House.D.OH <- get_timelines(c("TimRyan","RepMarciaFudge",
+                              "RepKucinich","RepMarcyKaptur",
+                              "RepBeatty"), n=3200)
+table(House.D.OH$screen_name)
+
+#House democrats Oklahoma:NA
+#House democrats:Oregon
+House.D.OR <- get_timelines(c("RepBonamici","RepSchrader",
+                              "RepPeterDeFazio","repblumenauer"),
+                            n=3200)
+table(House.D.OR$screen_name)
+
+#House democrats Pennsylvania
+House.D.PA <- get_timelines(c("RepCartwright","RepBrendanBoyle",
+                              "allysonschwartz","JoeSestak",
+                              "RepDwightEvans","jasonaltmire",
+                              "chakafattah","RepBrady"), 
+                            n=3200)
+table(House.D.PA$screen_name)
+
+##House democrats Rhode Island
+House.D.RI <- get_timelines(c("SenatorLankford","davidcicilline",
+                              "bobinglis"), n=3200)
+table(House.D.RI$screen_name)
+
+##House democrats South Carolina
+House.D.SC <- get_timeline("Clyburn", n=3200)
+
+#House democrats South Dakota:NA
+#House democrats Tennessee
+House.D.TN <- get_timelines(c("RepCohen","repjimcooper"), n=3200)
+
+
+#House democrats Texas
+House.D.TX <- get_timelines(c("RepVeasey","RepEBJ",
+                              "RepGeneGreen","RepCuellar",
+                              "RepLloydDoggett","JoaquinCastrotx",
+                              "RepBetoORourke","TX20CharlieG",
+                              "JacksonLeeTX18","SilvestreReyes",
+                              "USRepRHinojosa","RepAlGreen"),
+                            n=3200)
+table(House.D.TX$screen_name)
+
+#House democrats Utah:NA
+
+#House democrats Vermont
+House.D.VT <- get_timeline("PeterWelch", n=3200)
+
+#House democrats Virginia
+House.D.VA <- get_timelines(c("RepDonBeyer","GerryConnolly",
+                              "tomperriello","GlennNye",
+                              "Jim_Moran","BobbyScott"), n=3200)
+table(House.D.VA$screen_name)
+
+#House democrats Washington
+House.D.WA <- get_timelines(c("RepDennyHeck", "RepDerekKilmer",
+                              "RepDerekKilmer","RepAdamSmith",
+                              "RepJimMcDermott","RepRickLarsen",
+                              "JayInslee"), n=3200)
+table(House.D.WA$screen_name)
+
+
+#House democrats West Virginia
+House.D.WV <- get_timeline("RepNickRahall", n=3200)
+
+#House democrats Wisconsin
+House.D.WI <- get_timelines(c("RepRonKind","RepGwenMoore",
+                              "repmarkpocan"), n=3200)
+table(House.D.WI$screen_name)
+
+#House democrats Wyoming:NA
+
+#Edited Barney Frank of MA
+#REMOVED anschakowsky from IL and epjimcooper from TENNESSEE
+
+#SAVE ALL HOSUE DEMOCRATS
+write_as_csv(House.D.AL, "House.D.AL.csv")
+write_as_csv(House.D.AZ, "House.D.AZ.csv")
+write_as_csv(House.D.CA, "House.D.CA.csv")
+write_as_csv(House.D.CA2, "House.D.CA2.csv")
+write_as_csv(House.D.CA3, "House.D.CA3.csv")
+write_as_csv(House.D.CO, "House.D.CO.csv")
+write_as_csv(House.D.CT, "House.D.CT.csv")
+write_as_csv(House.D.DE, "House.D.DE.csv")
+write_as_csv(House.D.FL, "House.D.FL.csv")
+write_as_csv(House.D.GA, "House.D.GA.csv")
+write_as_csv(House.D.HI, "House.D.HI.csv")
+write_as_csv(House.D.IL, "House.D.IL.csv")
+write_as_csv(House.D.IN, "House.D.IN.csv")
+write_as_csv(House.D.IA, "House.D.IA.csv")
+write_as_csv(House.D.KY, "House.D.KY.csv")
+write_as_csv(House.D.LA, "House.D.LA.csv")
+write_as_csv(House.D.MD, "House.D.MD.csv")
+write_as_csv(House.D.MA, "House.D.MA.csv")
+write_as_csv(House.D.ME, "House.D.ME.csv")
+write_as_csv(House.D.MI, "House.D.MI.csv")
+write_as_csv(House.D.MN, "House.D.MN.csv")
+write_as_csv(House.D.MO, "House.D.MO.csv")
+write_as_csv(House.D.MS, "House.D.MS.csv")
+write_as_csv(House.D.NE, "House.D.NE.csv")
+write_as_csv(House.D.NH, "House.D.NH.csv")
+write_as_csv(House.D.NJ, "House.D.NJ.csv")
+write_as_csv(House.D.NV, "House.D.NV.csv")
+write_as_csv(House.D.NM, "House.D.NM.csv")
+write_as_csv(House.D.NY, "House.D.NY.csv")
+write_as_csv(House.D.NY2, "House.D.NY2")
+write_as_csv(House.D.NC, "House.D.NC.csv")
+write_as_csv(House.D.OH, "House.D.OH.csv")
+write_as_csv(House.D.OR, "House.D.OR.csv")
+write_as_csv(House.D.PA, "House.D.PA.csv")
+write_as_csv(House.D.RI,"House.D.RI.csv")
+write_as_csv(House.D.SC, "House.D.SC.csv")
+write_as_csv(House.D.TN, "House.D.TN.csv")
+write_as_csv(House.D.TX, "House.D.TX.csv")
+write_as_csv(House.D.VT,"House.D.VT.csv")
+write_as_csv(House.D.VA,"House.D.VA.csv")
+write_as_csv(House.D.WA, "House.D.WA.csv")
+write_as_csv(House.D.WV, "House.D.WV.csv")
+write_as_csv(House.D.WI,"House.D.WI.csv")
+
+
+```
+
+#Senate
+```{r cache=TRUE}
+
+#Senate Alabama
+Senate.AL <- get_timeline("SenShelby", n=3200)
+
+#Senate Alaska
+Senate.AK <- get_timelines(c("lisamurkowski","SenatorBegich",
+                             "SenDanSullivan"), n=3200)
+table(Senate.AK$screen_name)
+
+#Senate Arizona
+Senate.AZ <- get_timelines(c("SenJohnMcCain","JeffFlake"),
+                           n=3200)
+table(Senate.AZ$screen_name)
+
+#Senate  Arkansas
+Senate.AR <- get_timelines(c("SenTomCotton","JohnBoozman",
+                            "SenLincoln"), n=3200)
+table(Senate.AR$screen_name)
+
+#Senate  California
+Senate.CA <- get_timelines(c("BarbaraBoxer","SenFeinstein"),
+                           n=3200)
+table(Senate.CA$screen_name)
+
+#Senate Colorado
+Senate.CO <- get_timelines(c("SenCoryGardner","SenBennetCO",
+                             "MarkUdall"), n=3200)
+table(Senate.CO$screen_name)
+
+#Senate Connecticut
+Senate.CT <- get_timelines(c("ChrisMurphyCT","SenBlumenthal",
+                             "SenChrisDodd","JoeLieberman"),
+                           n=3200)
+table(Senate.CT$screen_name)
+
+#Senate Delaware
+Senate.DE <- get_timelines(c("TomCarperforDE","JoeBiden",
+                             "ChrisCoons"), n=3200)
+table(Senate.DE$screen_name)
+
+#Senate Florida
+Senate.FL <- get_timelines(c("SenBillNelson","George_LeMieux",
+                             "marcorubio"), n=3200)
+table(Senate.FL$screen_name)
+
+#Senate Georgia
+Senate.GA <- get_timelines(c("SenatorIsakson","sendavidperdue",
+                             "SaxbyChambliss"), n=3200)
+table(Senate.GA$screen_name)
+
+#Senate Hawaii
+Senate.HI <- get_timelines(c("SenatorAkaka","Daniel_Inouye",
+                             "maziehirono"), n=3200)
+table(Senate.HI$screen_name)
+
+#Senate Idaho
+Senate.ID <- get_timelines(c("MikeCrapo","SenatorRisch"),
+                           n=3200)
+table(Senate.ID$screen_name)
+
+#Senate Illinois
+Senate.IL <- get_timelines(c("SenatorDurbin","BarackObama",
+                             "SenatorKirk"), n=3200)
+table(Senate.IL$screen_name)
+
+#Senate  Indiana
+Senate.IN <- get_timelines(c("SenDonnelly","SenDanCoats",
+                             "SenEvanBayh"), n=3200)
+table(Senate.IN$screen_name)
+#Senate Iowa
+Senate.IA <- get_timelines(c("joniernst","ChuckGrassley",
+                             "SenatorHarkin"), n=3200)
+table(Senate.IA$screen_name)
+
+#Senate Kansas
+Senate.KS <- get_timelines(c("joniernst","SenPatRoberts"),
+                           n=3200)
+table(Senate.KS$screen_name)
+
+#Senate Kentucky
+Senate.KY <- get_timelines(c("SenateMajLdr","RandPaul"),
+                           n=3200)
+table(Senate.KY$screen_name)
+
+#Senate Louisiana
+Senate.LA <- get_timelines(c("BillCassidy","DavidVitter",
+                             "SenLandrieu"), n=3200)
+table(Senate.LA$screen_name)
+
+#Senate Maine
+Senate.ME <- get_timelines(c("SenAngusKing","SenatorCollins"),
+                           n=3200)
+table(Senate.ME$screen_name)
+
+#Senate Maryland
+Senate.MD <- get_timelines(c("SenatorBarb","SenatorCardin"),
+                           n=3200)
+table(Senate.MD$screen_name)
+
+#Senate Massachusetts
+Senate.MA <- get_timelines(c("SenMarkey","SenWarren",
+                             "SenScottBrown","JohnKerry"),
+                           n=3200)
+table(Senate.MA$screen_name)
+
+#Senate Michigan
+Senate.MI <- get_timelines(c("stabenow","SenCarlLevin",
+                             "SenGaryPeters"), n=3200)
+table(Senate.MI$screen_name)
+
+#Senate Minnesota
+Senate.MN <- get_timelines(c("amyklobuchar","SenFranken"),
+                           n=3200)
+table(Senate.MN$screen_name)
+
+#Senate Mississipi
+Senate.MS <- get_timelines(c("SenatorWicker","SenThadCochran"),
+                           n=3200)
+table(Senate.MS$screen_name)
+
+#Senate Missouri
+Senate.MO <- get_timelines(c("RoyBlunt","clairecmc"),
+                           n=3200)
+table(Senate.MO$screen_name)
+
+#Senate Montana
+Senate.MT <- get_timelines(c("SteveDaines","SenatorTester"),
+                           n=3200)
+table(Senate.MT$screen_name)
+
+#Senate Nebraska
+Senate.NE <- get_timelines(c("SenatorFischer","SenSasse"),
+                           n=3200)
+table(Senate.NE$screen_name)
+
+#Senate Nevada
+Senate.NV <- get_timelines(c("SenDeanHeller","SenatorReid",
+                             "JohnEnsign"), n=3200)
+table(Senate.NV$screen_name)
+
+#Senate New Hamshire
+Senate.NH <- get_timelines(c("KellyAyotte","SenatorShaheen"),
+                           n=3200)
+table(Senate.NH$screen_name)
+
+#Senate New Jersey
+Senate.NJ <- get_timelines(c("CoryBooker","FrankLautenberg",
+                           "SenatorMenendez"),n=3200)
+table(Senate.NJ$screen_name)
+
+#Senate New Mexico
+Senate.NM <- get_timelines(c("MartinHeinrich","SenatorTomUdall"),
+                           3200)
+table(Senate.NM$screen_name)
+
+#Senate New York
+Senate.NY <- get_timelines(c("SenGillibrand","SenSchumer"),
+                           n=3200)
+table(Senate.NY$screen_name)
+
+#Senate North Carolina
+Senate.NC <- get_timelines(c("SenThomTillis","kayhagan",
+                             "SenatorBurr"), n=3200)
+table(Senate.NC$screen_name)
+
+#Senate North Dakota
+Senate.ND <- get_timelines(c("SenatorHeitkamp","SenJohnHoeven",
+                             "KentConrad"), n=3200)
+table(Senate.ND$screen_name)
+
+#Senate Ohio
+Senate.OH <- get_timelines(c("ByronDorgan","senrobportman"),
+                           n=3200)
+
+#Senate Oklahoma
+Senate.OK <- get_timelines(c("JimInhofe","SenatorLankford"),
+                           n=3200)
+table(Senate.OK$screen_name)
+
+#Senate Oregon
+Senate.OR <- get_timelines(c("SenJeffMerkley","RonWyden"),
+                           n=3200)
+table(Senate.OR$screen_name)
+
+#Senate Pennsylvania
+Senate.PA <- get_timelines(c("SenBobCasey","SenArlenSpecter",
+                             "SenToomey"), n=3200)
+table(Senate.PA$screen_name)
+
+#Senate Rhode Island
+Senate.RI <- get_timelines(c("SenWhitehouse","SenJackReed"),
+                           n=3200)
+table(Senate.RI$screen_name)
+
+#Senate South Carolina
+Senate.SC <- get_timelines(c("LindseyGrahamSC","JimDeMint",
+                             "SenatorTimScott"), n=3200)
+table(Senate.SC$screen_name)
+
+#Senate South Dakota
+Senate.SD <- get_timelines(c("SenJohnThune","SenatorRounds"),
+                           n=3200)
+table(Senate.SD$screen_name)
+
+#Senate Tennessee
+Senate.TN <- get_timelines(c("SenBobCorker","SenAlexander"),
+                           n=3200)
+table(Senate.TN$screen_name)
+
+#Senate Texas
+Senate.TX <- get_timelines(c("kaybaileyhutch","JohnCornyn",
+                             "tedcruz"), n=3200)
+table(Senate.TX$screen_name)
+
+#Senate Utah
+Senate.UT <- get_timelines(c("OrrinHatch","SenMikeLee"),
+                           n=3200)
+table(Senate.UT$screen_name)
+
+#Senate Vermont
+Senate.VT <- get_timelines(c("SenSanders","SenatorLeahy"),
+                           n=3200)
+table(Senate.VT$screen_name)
+
+#Senate Virginia
+Senate.VA <- get_timelines(c("MarkWarner","timkaine"),
+                           n=3200)
+table(Senate.VA$screen_name)
+
+#Senate Washington
+Senate.WA <- get_timelines(c("SenatorCantwell","PattyMurray"),
+                           n=3200)
+table(Senate.WA$screen_name)
+
+#Senate West Virginia
+Senate.WV <- get_timelines(c("SenCapito","Sen_JoeManchin"),
+                           n=3200)
+table(Senate.WV$screen_name)
+
+#Senate Wisconsin
+Senate.WI <- get_timelines(c("russfeingold","SenRonJohnson",
+                             "SenatorBaldwin"), n=3200)
+table(Senate.WI$screen_name)
+
+#Senate Wyoming
+Senate.WY <- get_timelines(c("SenJohnBarrasso","SenatorEnzi"),
+                           n=3200)
+table(Senate.WY$screen_name)
+
+#SAVING ALL SENATE MEMBERS
+
+write_as_csv(Senate.AL, "Senate.AL.csv")
+write_as_csv(Senate.AK, "Senate.AK.csv")
+write_as_csv(Senate.AZ, "Senate.AZ.csv")
+write_as_csv(Senate.AR, "Senate.AR.csv")
+write_as_csv(Senate.CA, "Senate.CA.csv")
+write_as_csv(Senate.CO, "Senate.CO.csv")
+write_as_csv(Senate.CT, "Senate.CT.csv")
+write_as_csv(Senate.DE, "Senate.DE.csv")
+write_as_csv(Senate.FL, "Senate.FL.csv")
+write_as_csv(Senate.GA, "Senate.GA.csv")
+write_as_csv(Senate.HI, "Senate.HI.csv")
+write_as_csv(Senate.ID, "Senate.ID.csv")
+write_as_csv(Senate.IL, "Senate.IL.csv")
+write_as_csv(Senate.IN, "Senate.IN.csv")
+write_as_csv(Senate.IA, "Senate.IA.csv")
+write_as_csv(Senate.KS, "Senate.KS.csv")
+write_as_csv(Senate.KY, "Senate.KY.csv")
+write_as_csv(Senate.LA, "Senate.LA.csv")
+write_as_csv(Senate.ME, "Senate.ME.csv")
+write_as_csv(Senate.MD, "Senate.MD.csv")
+write_as_csv(Senate.MA, "Senate.MA.csv")
+write_as_csv(Senate.MI, "Senate.MI.csv")
+write_as_csv(Senate.MN, "Senate.MN.csv")
+write_as_csv(Senate.MS, "Senate.MS.csv")
+write_as_csv(Senate.MO, "Senate.MO.csv")
+write_as_csv(Senate.MT, "Senate.MT.csv")
+write_as_csv(Senate.NE, "Senate.NE.csv")
+write_as_csv(Senate.NV, "Senate.NV.csv")
+write_as_csv(Senate.NH, "Senate.NH.csv")
+write_as_csv(Senate.NJ, "Senate.NJ.csv")
+write_as_csv(Senate.NM, "Senate.NM.csv")
+write_as_csv(Senate.NY, "Senate.NY.csv")
+write_as_csv(Senate.NC, "Senate.NC.csv")
+write_as_csv(Senate.ND, "Senate.ND.csv")
+write_as_csv(Senate.OH, "Senate.OH.csv")
+write_as_csv(Senate.OK, "Senate.OK.csv")
+write_as_csv(Senate.OR, "Senate.OR.csv")
+write_as_csv(Senate.PA, "Senate.PA.csv")
+write_as_csv(Senate.RI, "Senate.RI.csv")
+write_as_csv(Senate.SC, "Senate.SC.csv")
+write_as_csv(Senate.SD, "Senate.SD.csv")
+write_as_csv(Senate.TN, "Senate.TN.csv")
+write_as_csv(Senate.TX, "Senate.TX.csv")
+write_as_csv(Senate.UT, "Senate.UT.csv")
+write_as_csv(Senate.VT, "Senate.VT.csv")
+write_as_csv(Senate.VA, "Senate.VA.csv")
+write_as_csv(Senate.WA, "Senate.WA.csv")
+write_as_csv(Senate.WV, "Senate.WV.csv")
+write_as_csv(Senate.WI, "Senate.WI.csv")
+write_as_csv(Senate.WY, "Senate.WY.csv")
+
+
+```
