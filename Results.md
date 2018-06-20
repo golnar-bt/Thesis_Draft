@@ -4,7 +4,8 @@ author: "Golnar Babakhani Teimouri"
 date: "May 19, 2018"
 output: 
   html_document:
-    keep_md: true
+    fig_height: 10
+    keep_md: yes
 ---
 
 
