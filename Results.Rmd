@@ -2,7 +2,7 @@
 title: "Untitled"
 author: "Golnar Babakhani Teimouri"
 date: "May 19, 2018"
-output: github_document
+output: html_document
 ---
 
 ```{r  include=FALSE, , message=FALSE, warning=FALSE, paged.print=FALSE}
@@ -38,7 +38,6 @@ library(ggplot2)
 library(reshape2)
 library(lmtest)
 library(pscl)
-
 ```
 
 ```{r, include=FALSE}
