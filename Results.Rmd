@@ -4,7 +4,7 @@ author: "Golnar Babakhani Teimouri"
 date: "May 19, 2018"
 output: 
   html_document:
-    fig_height: 10
+    fig_height: 7
     keep_md: yes
 ---
 
@@ -41,6 +41,8 @@ library(ggplot2)
 library(reshape2)
 library(lmtest)
 library(pscl)
+library(caret)
+
 ```
 
 ```{r, include=FALSE}
@@ -213,7 +215,7 @@ ggplot(frequency, aes(R, D)) +
   scale_y_log10(labels = percent_format()) +
   geom_abline(color = "red")+
   labs(title="Comparing the Frequency of Terms used by Republicans 
-       and Democrats 48 Hours After Mass Shootings, 2--7-17",
+       and Democrats 48 Hours After Mass Shootings, 2007-17",
        x="Republicans", y="Democrats")
 
 ```
@@ -400,7 +402,6 @@ Tidy_All <- Tidy_All %>%
 #Correct the formatting for the united new column
 Tidy_All$timestamp <- ymd_hms(Tidy_All$timestamp)
   
-  
 words_by_time <-Tidy_All %>%
   mutate(time_floor = floor_date(timestamp, unit = "year")) %>%
   count(time_floor, R_or_D, bigram) %>%
@@ -413,6 +414,7 @@ words_by_time <-Tidy_All %>%
   rename(count = n) %>%
   filter(word_total > 30)
 words_by_time
+
 
 #Create nested data
 nested_data <- words_by_time%>%
@@ -459,7 +461,6 @@ Over Time (48 Hours Before and After Mass Shootings, 2007-2017)
        by Democrats",
     x = "Year", y = "Word frequency")
 Words_overtime_D
-
 
 ```
 
@@ -677,14 +678,13 @@ ggarrange(Congress_sentiment_graph1+labs(title="After shooting"),Congress_sentim
 ```
 
 
-
 #Logistic Regression
 ```{r}
 
 #Joining All congress(both before and after) with shooting dataframe
 df <- left_join(before_and_after,Shootings)
 tidy_df <- df%>%
-  select(-9,-10,-11,-12,-13,-15,-16)
+  select(-9,-11,-12)
 
 #Extracting keywords from the tweet texts
 keywords <- df$text[grep("[Tt]error|[Tt]errorist|[Tt]errorists|
@@ -705,6 +705,8 @@ tidy_keywords2$mentions_terror <- as.numeric(tidy_keywords2$mentions_terror)
 
 #Merging dataframes
 df2 <-merge(tidy_df,tidy_keywords2, all=TRUE)
+
+#Normalizing Nominate Scores
 
 #replacing na values for mentions_terror with 0
 df2$mentions_terror[is.na(df2$mentions_terror)] <- 0
@@ -733,26 +735,26 @@ df3%>%
 #Changing party id to a factor
 df2$R_or_D <- as.factor(df2$R_or_D)
 
-
-regression1 <- glm(mentions_terror ~ R_or_D+Nominate_dim2, 
+#Regression model
+regression1 <- glm(mentions_terror ~ R_or_D+Nominate_dim1,
                    data = df2,family = "binomial")
 summary(regression1)
 
-#Adding predictions 
 
+#Adding predictions 
 terrorism<- df2 %>%
-  data_grid(R_or_D,Nominate_dim2)%>%
+  data_grid(R_or_D,Nominate_dim1,.model = regression1)%>%
   add_predictions(regression1)
 terrorism
 
 #Plotting first model
 
 ggplot(terrorism,
-       aes(Nominate_dim2, pred))+
+       aes(Nominate_dim1, pred))+
   geom_smooth(aes(color=R_or_D))+
   scale_colour_manual(labels = c("D", "R"), 
                       values=c("blue","red"))+
-  labs(title="Relationship Between Probability of Mentioning Terrorism, 
+  labs(title="Relationship Between Mentioning Terrorism, 
        Party ID, and Ideology",
        x="Ideology(Nominate Score)",
        y="Log Odds Ratio of Mentioning Terrorism")+
@@ -761,38 +763,42 @@ ggplot(terrorism,
 
 #Second regression: Association between mentioning terror in shooting related cases and party ID, nominate scores, and shooter's race
 
-regression2 <- glm(Shooting_related_terrorism~R_or_D+Nominate_dim2+
-                race+race*R_or_D+ race*Nominate_dim2, 
-                data = df3,family=binomial(link = "logit"))
+regression2 <- glm(Shooting_related_terrorism~race*R_or_D+ race*Nominate_dim1, 
+                data = df3,family= binomial(link = "logit"))
 summary(regression2)
 
-#Validating My Model
 
-set.seed(1234)
-df3_split <- resample_partition(df3, c(test=0.5,train=0.5))
-df3_train <- as_tibble(df3_split$train)
-df3_test <- as_tibble(df3_split$test)
+#k-fold cross validation to estimate my model's accuracy
 
-mod_fit1 <- glm(Shooting_related_terrorism~R_or_D+Nominate_dim2+
-                race+race*R_or_D+ race*Nominate_dim2, 
-                data = df3_train,family= "binomial")
+#Function to Calculate MSE
+mse.glm <- function (model, data){
+  residuals.glm <- function(model, data) {
+    modelr:::response(model, data) - stats::predict(model,
+                                                    data,
+                                                    type = "response")
+  }
+  
+  x <- residuals(model, data)
+  mean(x^2, na.rm = TRUE)
+}
 
-mod_fit2 <-glm(Shooting_related_terrorism~R_or_D+Nominate_dim2+race, 
-                data = df3_train,family="binomial")
+Kfold_validation <- crossv_kfold(df3, k=10)
+Kfold_models <- map(Kfold_validation$train, ~ glm(Shooting_related_terrorism
+                                                  ~ race*R_or_D+race*Nominate_dim1,
+                                                 data = .,
+                                                 family = binomial))
+data_mse <- map2_dbl(Kfold_models, Kfold_validation$test, mse.glm)
+mean(data_mse, na.rm = TRUE)
 
-lrtest(mod_fit1, mod_fit2)
-
-#OR
-pR2(mod_fit1)
-
-#MCFADDEN=0.95 ....>good Model
+#MSE=0.06 So my model is good!
 
 #Adding predictions 
 df3$R_or_D <- as.factor(df3$R_or_D)
 df3$race <- as.factor(df3$race)
 
+
 terrorism2<- df3 %>%
-  data_grid(R_or_D,Nominate_dim2, race,.model = regression2)%>%
+  data_grid(R_or_D,Nominate_dim1, race,.model = regression2)%>%
   add_predictions(regression2)
 terrorism2
 
@@ -802,8 +808,8 @@ terrorism2 <- terrorism2%>%
 str(terrorism2)
 
 ggplot(terrorism2,
-       aes(Nominate_dim2,pred, color=R_or_D))+
-  geom_smooth()+
+       aes(Nominate_dim1,pred, color=R_or_D))+
+  geom_line(aes(linetype=R_or_D), position = position_dodge(width = 0.3))+
   facet_wrap(~race)+
   labs(title="Relationship Between Calling a shooting Terrorism,
 Shooter's Race, Party ID, and Ideology ",
