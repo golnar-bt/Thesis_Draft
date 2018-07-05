@@ -1224,7 +1224,7 @@ Need my tokens to be words instead of bigrams for sentiment analysis. So i chang
 ```
 
 ```
-## [1] 0.1399738
+## [1] 0.08268003
 ```
 
 ```

@@ -234,7 +234,7 @@ All_bigrams_united
 
 ```{r}
 
-#Need to put back Date and Time together to use Floor Date
+#Need to put back Date and Time together to use Floor Date Function
 
 #First correct the formatting for Date
 
@@ -353,8 +353,6 @@ tdm2
 
 findAssocs(tdm2, "terror", 0.2)
 findAssocs(tdm2, "gun", 0.2)
-
-
 
 #Republican word associations after shooting
 
