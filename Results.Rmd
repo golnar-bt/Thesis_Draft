@@ -133,17 +133,18 @@ Congress_bigrams_united
 
 #Plotting Tfidf
 Graph1 <- Congress_TfIdf%>%
-  group_by(tf_idf>0.0002833)%>%
-  top_n(15, abs(tf_idf)) %>%
-  mutate(Term = reorder(bigram, tf_idf)) %>%
-  ggplot(aes(Term, tf_idf, fill = tf_idf>0.0002833)) +
+  arrange(desc(tf_idf))%>%
+  mutate(word=factor(bigram, levels = rev(unique(bigram))))%>%
+  top_n(20) %>%
+  mutate(Term = reorder(word, tf_idf)) %>%
+  ggplot(aes(Term, tf_idf, fill = R_or_D)) +
   geom_col(show.legend = TRUE) +
   coord_flip() +
   labs(title="Frequency of Words Used 48 Hours After Mass Shootings, 
        2007-2017",
        y="tf-idf") +
-  scale_fill_manual(name = "", labels = c("R", "D"), 
-                      values=c("red","blue"))
+  scale_fill_manual(name = "", labels = c("D", "R"), 
+                      values=c("blue","red"))
 Graph1
 
 ```
@@ -270,22 +271,22 @@ Congress_before_bigrams_united
   kable(caption = "Table 1. Highest Tfidf Bigrams in Tweets by Party 48 hours Before Shooting")%>%
   kable_styling(full_width = FALSE)
 
+
 #Plotting Tfidf
 Graph2 <- Congress_before_TfIdf%>%
-  group_by(tf_idf>0.0002705)%>%
-  top_n(15, abs(tf_idf)) %>%
-  mutate(Term = reorder(bigram, tf_idf)) %>%
-  ggplot(aes(Term, tf_idf, fill = tf_idf>0.0002705)) +
+  arrange(desc(tf_idf))%>%
+  mutate(word=factor(bigram, levels = rev(unique(bigram))))%>%
+  top_n(20) %>%
+  mutate(Term = reorder(word, tf_idf)) %>%
+  ggplot(aes(Term, tf_idf, fill = R_or_D)) +
   geom_col(show.legend = TRUE) +
   coord_flip() +
-  labs(title="Frequency of Words Used 48 Hours 
-       Before Mass Shootings, 2007-2017",
-    y="tf-idf") +
-   scale_fill_manual(name = "", labels = c("R", "D"), 
-                      values=c("red","blue"))
+  labs(title="Frequency of Words Used 48 Hours Before Mass Shootings, 
+       2007-2017",
+       y="tf-idf") +
+  scale_fill_manual(name = "", labels = c("D", "R"), 
+                      values=c("blue","red"))
 Graph2
-
-
 ```
 #Logs Ratio for before shooting
 

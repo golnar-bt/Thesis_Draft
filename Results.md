@@ -4,7 +4,7 @@ author: "Golnar Babakhani Teimouri"
 date: "May 19, 2018"
 output: 
   html_document:
-    fig_height: 10
+    fig_height: 7
     keep_md: yes
 ---
 
@@ -33,18 +33,18 @@ output:
 
 ```
 ## # A tibble: 73,798 x 8
-##    Date   Time  R_or_D Before_or_After… screen_name hashtags Nominate_dim2
-##    <chr>  <tim> <chr>  <chr>            <chr>       <chr>            <dbl>
-##  1 1/8/11 00:05 D      After            GabbyGiffo… <NA>             0.076
-##  2 1/8/11 00:05 D      After            GabbyGiffo… <NA>             0.076
-##  3 1/8/11 00:05 D      After            GabbyGiffo… <NA>             0.076
-##  4 1/8/11 00:05 D      After            GabbyGiffo… <NA>             0.076
-##  5 1/8/11 01:53 D      After            SilvestreR… <NA>             0.304
-##  6 1/8/11 01:53 D      After            SilvestreR… <NA>             0.304
-##  7 1/8/11 01:53 D      After            SilvestreR… <NA>             0.304
-##  8 1/8/11 01:53 D      After            SilvestreR… <NA>             0.304
-##  9 1/8/11 01:53 D      After            SilvestreR… <NA>             0.304
-## 10 1/8/11 04:42 D      After            GabbyGiffo… <NA>             0.076
+##    Date  Time  R_or_D Before_or_After screen_name hashtags Nominate_dim1
+##    <chr> <tim> <chr>  <chr>           <chr>       <chr>            <dbl>
+##  1 1/8/… 00:05 D      After           GabbyGiffo… <NA>            -0.11 
+##  2 1/8/… 00:05 D      After           GabbyGiffo… <NA>            -0.11 
+##  3 1/8/… 00:05 D      After           GabbyGiffo… <NA>            -0.11 
+##  4 1/8/… 00:05 D      After           GabbyGiffo… <NA>            -0.11 
+##  5 1/8/… 01:53 D      After           SilvestreR… <NA>            -0.321
+##  6 1/8/… 01:53 D      After           SilvestreR… <NA>            -0.321
+##  7 1/8/… 01:53 D      After           SilvestreR… <NA>            -0.321
+##  8 1/8/… 01:53 D      After           SilvestreR… <NA>            -0.321
+##  9 1/8/… 01:53 D      After           SilvestreR… <NA>            -0.321
+## 10 1/8/… 04:42 D      After           GabbyGiffo… <NA>            -0.11 
 ## # ... with 73,788 more rows, and 1 more variable: bigram <chr>
 ```
 
@@ -291,10 +291,10 @@ output:
 
 
 ```
-## # A tibble: 104,813 x 2
+## # A tibble: 104,804 x 2
 ##    word          n
 ##    <fct>     <int>
-##  1 of the      719
+##  1 of the      720
 ##  2 on the      555
 ##  3 in the      524
 ##  4 to the      494
@@ -304,11 +304,11 @@ output:
 ##  8 thank you   236
 ##  9 will be     216
 ## 10 proud to    207
-## # ... with 104,803 more rows
+## # ... with 104,794 more rows
 ```
 
 ```
-## # A tibble: 38,515 x 3
+## # A tibble: 38,511 x 3
 ##    word1     word2        n
 ##    <chr>     <chr>    <int>
 ##  1 health    care       111
@@ -321,25 +321,24 @@ output:
 ##  8 national  security    59
 ##  9 happy     birthday    56
 ## 10 president obama       47
-## # ... with 38,505 more rows
+## # ... with 38,501 more rows
 ```
 
 ```
-## # A tibble: 49,640 x 12
-##    Date   Time  R_or_D Before_or_After… screen_name hashtags Nominate_dim2
-##    <chr>  <tim> <chr>  <chr>            <chr>       <chr>            <dbl>
-##  1 1/10/… 00:02 D      Before           RepVisclos… <NA>             0.246
-##  2 1/10/… 00:02 D      Before           RepVisclos… <NA>             0.246
-##  3 1/10/… 00:02 D      Before           RepVisclos… <NA>             0.246
-##  4 1/10/… 00:02 D      Before           RepVisclos… <NA>             0.246
-##  5 1/10/… 00:59 R      Before           RepKayGran… <NA>             0.231
-##  6 1/10/… 00:59 R      Before           RepKayGran… <NA>             0.231
-##  7 1/10/… 00:59 R      Before           RepKayGran… <NA>             0.231
-##  8 1/10/… 03:39 R      Before           DevinNunes  <NA>             0.194
-##  9 1/10/… 03:39 R      Before           DevinNunes  <NA>             0.194
-## 10 1/10/… 03:39 R      Before           DevinNunes  <NA>             0.194
-## # ... with 49,630 more rows, and 5 more variables: X9 <chr>, X10 <chr>,
-## #   X11 <chr>, X12 <chr>, bigram <chr>
+## # A tibble: 49,635 x 8
+##    Date  Time  R_or_D Before_or_After screen_name hashtags Nominate_dim1
+##    <chr> <tim> <chr>  <chr>           <chr>       <chr>            <dbl>
+##  1 1/10… 00:02 D      Before          RepVisclos… <NA>            -0.402
+##  2 1/10… 00:02 D      Before          RepVisclos… <NA>            -0.402
+##  3 1/10… 00:02 D      Before          RepVisclos… <NA>            -0.402
+##  4 1/10… 00:02 D      Before          RepVisclos… <NA>            -0.402
+##  5 1/10… 00:59 R      Before          RepKayGran… <NA>             0.392
+##  6 1/10… 00:59 R      Before          RepKayGran… <NA>             0.392
+##  7 1/10… 00:59 R      Before          RepKayGran… <NA>             0.392
+##  8 1/10… 03:39 R      Before          DevinNunes  <NA>             0.448
+##  9 1/10… 03:39 R      Before          DevinNunes  <NA>             0.448
+## 10 1/10… 03:39 R      Before          DevinNunes  <NA>             0.448
+## # ... with 49,625 more rows, and 1 more variable: bigram <chr>
 ```
 
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
@@ -359,15 +358,15 @@ output:
    <td style="text-align:left;"> D </td>
    <td style="text-align:left;"> gun violence </td>
    <td style="text-align:right;"> 26 </td>
-   <td style="text-align:right;"> 0.0013760 </td>
+   <td style="text-align:right;"> 0.0013762 </td>
    <td style="text-align:right;"> 0.6931472 </td>
-   <td style="text-align:right;"> 0.0009538 </td>
+   <td style="text-align:right;"> 0.0009539 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> D </td>
    <td style="text-align:left;"> senator inouye </td>
    <td style="text-align:right;"> 15 </td>
-   <td style="text-align:right;"> 0.0007939 </td>
+   <td style="text-align:right;"> 0.0007940 </td>
    <td style="text-align:right;"> 0.6931472 </td>
    <td style="text-align:right;"> 0.0005503 </td>
   </tr>
@@ -375,7 +374,7 @@ output:
    <td style="text-align:left;"> R </td>
    <td style="text-align:left;"> veterans deserve </td>
    <td style="text-align:right;"> 24 </td>
-   <td style="text-align:right;"> 0.0007806 </td>
+   <td style="text-align:right;"> 0.0007807 </td>
    <td style="text-align:right;"> 0.6931472 </td>
    <td style="text-align:right;"> 0.0005411 </td>
   </tr>
@@ -383,31 +382,31 @@ output:
    <td style="text-align:left;"> D </td>
    <td style="text-align:left;"> equal pay </td>
    <td style="text-align:right;"> 14 </td>
-   <td style="text-align:right;"> 0.0007409 </td>
+   <td style="text-align:right;"> 0.0007411 </td>
    <td style="text-align:right;"> 0.6931472 </td>
-   <td style="text-align:right;"> 0.0005136 </td>
+   <td style="text-align:right;"> 0.0005137 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> D </td>
    <td style="text-align:left;"> class tax </td>
    <td style="text-align:right;"> 12 </td>
-   <td style="text-align:right;"> 0.0006351 </td>
+   <td style="text-align:right;"> 0.0006352 </td>
    <td style="text-align:right;"> 0.6931472 </td>
-   <td style="text-align:right;"> 0.0004402 </td>
+   <td style="text-align:right;"> 0.0004403 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> D </td>
    <td style="text-align:left;"> class security </td>
    <td style="text-align:right;"> 11 </td>
-   <td style="text-align:right;"> 0.0005822 </td>
+   <td style="text-align:right;"> 0.0005823 </td>
    <td style="text-align:right;"> 0.6931472 </td>
-   <td style="text-align:right;"> 0.0004035 </td>
+   <td style="text-align:right;"> 0.0004036 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> R </td>
    <td style="text-align:left;"> tax reform </td>
    <td style="text-align:right;"> 17 </td>
-   <td style="text-align:right;"> 0.0005529 </td>
+   <td style="text-align:right;"> 0.0005530 </td>
    <td style="text-align:right;"> 0.6931472 </td>
    <td style="text-align:right;"> 0.0003833 </td>
   </tr>
@@ -415,25 +414,25 @@ output:
    <td style="text-align:left;"> D </td>
    <td style="text-align:left;"> americans makeitinamerica </td>
    <td style="text-align:right;"> 10 </td>
-   <td style="text-align:right;"> 0.0005292 </td>
+   <td style="text-align:right;"> 0.0005293 </td>
    <td style="text-align:right;"> 0.6931472 </td>
-   <td style="text-align:right;"> 0.0003668 </td>
+   <td style="text-align:right;"> 0.0003669 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> D </td>
    <td style="text-align:left;"> disarmhate lightingtheway </td>
    <td style="text-align:right;"> 10 </td>
-   <td style="text-align:right;"> 0.0005292 </td>
+   <td style="text-align:right;"> 0.0005293 </td>
    <td style="text-align:right;"> 0.6931472 </td>
-   <td style="text-align:right;"> 0.0003668 </td>
+   <td style="text-align:right;"> 0.0003669 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> D </td>
    <td style="text-align:left;"> student debt </td>
    <td style="text-align:right;"> 10 </td>
-   <td style="text-align:right;"> 0.0005292 </td>
+   <td style="text-align:right;"> 0.0005293 </td>
    <td style="text-align:right;"> 0.6931472 </td>
-   <td style="text-align:right;"> 0.0003668 </td>
+   <td style="text-align:right;"> 0.0003669 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> R </td>
@@ -447,7 +446,7 @@ output:
    <td style="text-align:left;"> D </td>
    <td style="text-align:left;"> 9 hawaii </td>
    <td style="text-align:right;"> 8 </td>
-   <td style="text-align:right;"> 0.0004234 </td>
+   <td style="text-align:right;"> 0.0004235 </td>
    <td style="text-align:right;"> 0.6931472 </td>
    <td style="text-align:right;"> 0.0002935 </td>
   </tr>
@@ -455,7 +454,7 @@ output:
    <td style="text-align:left;"> D </td>
    <td style="text-align:left;"> critical support </td>
    <td style="text-align:right;"> 8 </td>
-   <td style="text-align:right;"> 0.0004234 </td>
+   <td style="text-align:right;"> 0.0004235 </td>
    <td style="text-align:right;"> 0.6931472 </td>
    <td style="text-align:right;"> 0.0002935 </td>
   </tr>
@@ -463,7 +462,7 @@ output:
    <td style="text-align:left;"> D </td>
    <td style="text-align:left;"> dotherightthing extend </td>
    <td style="text-align:right;"> 8 </td>
-   <td style="text-align:right;"> 0.0004234 </td>
+   <td style="text-align:right;"> 0.0004235 </td>
    <td style="text-align:right;"> 0.6931472 </td>
    <td style="text-align:right;"> 0.0002935 </td>
   </tr>
@@ -471,7 +470,7 @@ output:
    <td style="text-align:left;"> D </td>
    <td style="text-align:left;"> innovation job </td>
    <td style="text-align:right;"> 8 </td>
-   <td style="text-align:right;"> 0.0004234 </td>
+   <td style="text-align:right;"> 0.0004235 </td>
    <td style="text-align:right;"> 0.6931472 </td>
    <td style="text-align:right;"> 0.0002935 </td>
   </tr>
@@ -479,7 +478,7 @@ output:
    <td style="text-align:left;"> D </td>
    <td style="text-align:left;"> paycheck fairness </td>
    <td style="text-align:right;"> 8 </td>
-   <td style="text-align:right;"> 0.0004234 </td>
+   <td style="text-align:right;"> 0.0004235 </td>
    <td style="text-align:right;"> 0.6931472 </td>
    <td style="text-align:right;"> 0.0002935 </td>
   </tr>
@@ -487,7 +486,7 @@ output:
    <td style="text-align:left;"> R </td>
    <td style="text-align:left;"> sen collins </td>
    <td style="text-align:right;"> 13 </td>
-   <td style="text-align:right;"> 0.0004228 </td>
+   <td style="text-align:right;"> 0.0004229 </td>
    <td style="text-align:right;"> 0.6931472 </td>
    <td style="text-align:right;"> 0.0002931 </td>
   </tr>
@@ -497,7 +496,7 @@ output:
    <td style="text-align:right;"> 12 </td>
    <td style="text-align:right;"> 0.0003903 </td>
    <td style="text-align:right;"> 0.6931472 </td>
-   <td style="text-align:right;"> 0.0002705 </td>
+   <td style="text-align:right;"> 0.0002706 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> R </td>
@@ -505,7 +504,7 @@ output:
    <td style="text-align:right;"> 12 </td>
    <td style="text-align:right;"> 0.0003903 </td>
    <td style="text-align:right;"> 0.6931472 </td>
-   <td style="text-align:right;"> 0.0002705 </td>
+   <td style="text-align:right;"> 0.0002706 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> R </td>
@@ -513,7 +512,7 @@ output:
    <td style="text-align:right;"> 12 </td>
    <td style="text-align:right;"> 0.0003903 </td>
    <td style="text-align:right;"> 0.6931472 </td>
-   <td style="text-align:right;"> 0.0002705 </td>
+   <td style="text-align:right;"> 0.0002706 </td>
   </tr>
 </tbody>
 </table>
@@ -523,20 +522,20 @@ output:
 
 
 ```
-## # A tibble: 38,515 x 4
+## # A tibble: 38,511 x 4
 ##    bigram                     D         R logratio
 ##    <chr>                  <dbl>     <dbl>    <dbl>
-##  1 1 million          0.0000871 0.0000866 -0.00533
-##  2 7 30               0.0000871 0.0000866 -0.00533
-##  3 save lives         0.0000871 0.0000866 -0.00533
-##  4 step forward       0.0000871 0.0000866 -0.00533
+##  1 1 million          0.0000871 0.0000866 -0.00536
+##  2 7 30               0.0000871 0.0000866 -0.00536
+##  3 save lives         0.0000871 0.0000866 -0.00536
+##  4 step forward       0.0000871 0.0000866 -0.00536
 ##  5 30 pm              0.000105  0.000101  -0.0335 
 ##  6 american flag      0.000105  0.000101  -0.0335 
 ##  7 gabrielle giffords 0.000105  0.000101  -0.0335 
 ##  8 6 30               0.0000697 0.0000722  0.0355 
 ##  9 appropriations act 0.0000697 0.0000722  0.0355 
 ## 10 beautiful day      0.0000697 0.0000722  0.0355 
-## # ... with 38,505 more rows
+## # ... with 38,501 more rows
 ```
 
 ![](Results_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
@@ -548,7 +547,7 @@ output:
 
 
 ```
-## # A tibble: 87,300 x 3
+## # A tibble: 87,296 x 3
 ##    word1     word2           n
 ##    <chr>     <chr>       <int>
 ##  1 health    care          265
@@ -561,43 +560,42 @@ output:
 ##  8 happy     birthday      133
 ##  9 president obama         129
 ## 10 house     passed        126
-## # ... with 87,290 more rows
+## # ... with 87,286 more rows
 ```
 
 ```
-## # A tibble: 123,413 x 12
-##    Date   Time  R_or_D Before_or_After… screen_name hashtags Nominate_dim2
-##    <chr>  <tim> <chr>  <chr>            <chr>       <chr>            <dbl>
-##  1 1/10/… 00:02 D      Before           RepVisclos… <NA>             0.246
-##  2 1/10/… 00:02 D      Before           RepVisclos… <NA>             0.246
-##  3 1/10/… 00:02 D      Before           RepVisclos… <NA>             0.246
-##  4 1/10/… 00:02 D      Before           RepVisclos… <NA>             0.246
-##  5 1/10/… 00:59 R      Before           RepKayGran… <NA>             0.231
-##  6 1/10/… 00:59 R      Before           RepKayGran… <NA>             0.231
-##  7 1/10/… 00:59 R      Before           RepKayGran… <NA>             0.231
-##  8 1/10/… 03:39 R      Before           DevinNunes  <NA>             0.194
-##  9 1/10/… 03:39 R      Before           DevinNunes  <NA>             0.194
-## 10 1/10/… 03:39 R      Before           DevinNunes  <NA>             0.194
-## # ... with 123,403 more rows, and 5 more variables: X9 <chr>, X10 <chr>,
-## #   X11 <chr>, X12 <chr>, bigram <chr>
+## # A tibble: 123,408 x 8
+##    Date  Time  R_or_D Before_or_After screen_name hashtags Nominate_dim1
+##    <chr> <tim> <chr>  <chr>           <chr>       <chr>            <dbl>
+##  1 1/10… 00:02 D      Before          RepVisclos… <NA>            -0.402
+##  2 1/10… 00:02 D      Before          RepVisclos… <NA>            -0.402
+##  3 1/10… 00:02 D      Before          RepVisclos… <NA>            -0.402
+##  4 1/10… 00:02 D      Before          RepVisclos… <NA>            -0.402
+##  5 1/10… 00:59 R      Before          RepKayGran… <NA>             0.392
+##  6 1/10… 00:59 R      Before          RepKayGran… <NA>             0.392
+##  7 1/10… 00:59 R      Before          RepKayGran… <NA>             0.392
+##  8 1/10… 03:39 R      Before          DevinNunes  <NA>             0.448
+##  9 1/10… 03:39 R      Before          DevinNunes  <NA>             0.448
+## 10 1/10… 03:39 R      Before          DevinNunes  <NA>             0.448
+## # ... with 123,398 more rows, and 1 more variable: bigram <chr>
 ```
 #Words over time
 
 
 ```
 ## # A tibble: 910 x 6
-##    time_floor          R_or_D bigram           count time_total word_total
-##    <dttm>              <chr>  <chr>            <int>      <int>      <int>
-##  1 2009-01-01 00:00:00 D      30 pm                1        596         43
-##  2 2009-01-01 00:00:00 D      american people      1        596        120
-##  3 2009-01-01 00:00:00 D      capitol hill         1        596         45
-##  4 2009-01-01 00:00:00 D      committee heari…     1        596         36
-##  5 2009-01-01 00:00:00 D      fort hood            1        596         63
-##  6 2009-01-01 00:00:00 D      health care          7        596        265
-##  7 2009-01-01 00:00:00 D      health insurance     2        596         41
-##  8 2009-01-01 00:00:00 D      house floor          2        596        240
-##  9 2009-01-01 00:00:00 D      listen live          4        596         72
-## 10 2009-01-01 00:00:00 D      op ed                2        596        168
+##    time_floor          R_or_D bigram            count time_total word_total
+##    <dttm>              <chr>  <chr>             <int>      <int>      <int>
+##  1 2009-01-01 00:00:00 D      30 pm                 1        596         43
+##  2 2009-01-01 00:00:00 D      american people       1        596        120
+##  3 2009-01-01 00:00:00 D      capitol hill          1        596         45
+##  4 2009-01-01 00:00:00 D      committee hearing     1        596         36
+##  5 2009-01-01 00:00:00 D      fort hood             1        596         63
+##  6 2009-01-01 00:00:00 D      health care           7        596        265
+##  7 2009-01-01 00:00:00 D      health insurance      2        596         41
+##  8 2009-01-01 00:00:00 D      house floor           2        596        240
+##  9 2009-01-01 00:00:00 D      listen live           4        596         72
+## 10 2009-01-01 00:00:00 D      op ed                 2        596        168
 ## # ... with 900 more rows
 ```
 
@@ -637,18 +635,18 @@ output:
 
 ```
 ## # A tibble: 24 x 8
-##    R_or_D bigram         term      estimate   std.error statistic  p.value
-##    <chr>  <chr>          <chr>        <dbl>       <dbl>     <dbl>    <dbl>
-##  1 D      health care    time_flo… -7.07e-9     1.75e-9     -4.05 5.21e- 5
-##  2 D      listen live    time_flo… -2.20e-8     5.11e-9     -4.31 1.66e- 5
-##  3 D      police office… time_flo…  2.07e-8     4.87e-9      4.25 2.11e- 5
-##  4 R      30 pm          time_flo… -1.44e-8     2.58e-9     -5.57 2.56e- 8
-##  5 R      fort hood      time_flo… -1.14e-8     1.81e-9     -6.27 3.61e-10
-##  6 R      health care    time_flo… -1.31e-8     1.20e-9    -11.0  4.22e-28
-##  7 R      house gop      time_flo… -1.72e-8     2.85e-9     -6.06 1.36e- 9
-##  8 R      press confere… time_flo… -1.12e-8     2.65e-9     -4.22 2.46e- 5
-##  9 R      town hall      time_flo… -6.14e-9     1.51e-9     -4.06 4.96e- 5
-## 10 R      create jobs    time_flo… -1.53e-8     2.69e-9     -5.70 1.22e- 8
+##    R_or_D bigram term  estimate std.error statistic  p.value
+##    <chr>  <chr>  <chr>    <dbl>     <dbl>     <dbl>    <dbl>
+##  1 D      healt… time… -7.07e-9   1.75e-9     -4.05 5.22e- 5
+##  2 D      liste… time… -2.20e-8   5.11e-9     -4.31 1.66e- 5
+##  3 D      polic… time…  2.07e-8   4.87e-9      4.25 2.10e- 5
+##  4 R      30 pm  time… -1.44e-8   2.58e-9     -5.57 2.57e- 8
+##  5 R      fort … time… -1.14e-8   1.81e-9     -6.27 3.62e-10
+##  6 R      healt… time… -1.31e-8   1.20e-9    -11.0  4.24e-28
+##  7 R      house… time… -1.72e-8   2.85e-9     -6.06 1.36e- 9
+##  8 R      press… time… -1.12e-8   2.65e-9     -4.22 2.46e- 5
+##  9 R      town … time… -6.14e-9   1.51e-9     -4.06 4.96e- 5
+## 10 R      creat… time… -1.53e-8   2.69e-9     -5.70 1.22e- 8
 ## # ... with 14 more rows, and 1 more variable: adjusted.p.value <dbl>
 ```
 
@@ -679,12 +677,12 @@ output:
 ```
 ## <<SimpleCorpus>>
 ## Metadata:  corpus specific: 1, document level (indexed): 0
-## Content:  documents: 11680
+## Content:  documents: 11679
 ```
 
 ```
-## <<TermDocumentMatrix (terms: 15548, documents: 11680)>>
-## Non-/sparse entries: 119964/181480676
+## <<TermDocumentMatrix (terms: 15546, documents: 11679)>>
+## Non-/sparse entries: 119964/181441770
 ## Sparsity           : 100%
 ## Maximal term length: 38
 ## Weighting          : term frequency (tf)
@@ -988,26 +986,25 @@ Need my tokens to be words instead of bigrams for sentiment analysis. So i chang
 ![](Results_files/figure-html/unnamed-chunk-12-1.png)<!-- -->![](Results_files/figure-html/unnamed-chunk-12-2.png)<!-- -->![](Results_files/figure-html/unnamed-chunk-12-3.png)<!-- -->
 
 
-
 #Logistic Regression
 
 ```
-## # A tibble: 475 x 16
-##    Date   Time   R_or_D Before_or_After… screen_name text         hashtags
-##    <chr>  <time> <chr>  <chr>            <chr>       <chr>        <chr>   
-##  1 12/3/… 13:10  R      After            Robert_Ade… Contortions… SanBern…
-##  2 6/12/… 19:02  R      After            RepMarthaR… We must dis… <NA>    
-##  3 6/12/… 18:59  R      After            RepMarthaR… This is the… <NA>    
-##  4 6/12/… 18:51  R      After            RepMarthaR… Horrified &… <NA>    
-##  5 6/12/… 18:24  R      After            USRepGaryP… My thoughts… Orlando 
-##  6 10/1/… 19:02  R      After            USRepGaryP… "#NotOneCen… NotOneC…
-##  7 10/1/… 16:10  R      After            USRepGaryP… See @RepMee… NotOneC…
-##  8 6/11/… 22:16  R      After            USRepGaryP… "Proud to s… <NA>    
-##  9 10/2/… 15:02  R      After            RepFrenchH… ICYMI: My s… <NA>    
-## 10 10/1/… 21:23  R      After            RepFrenchH… Here is why… NotOneC…
-## # ... with 465 more rows, and 9 more variables: Nominate_dim2 <dbl>,
-## #   X9 <chr>, X10 <chr>, X11 <chr>, X12 <chr>, case <chr>,
-## #   total_victims <int>, mental_health_issues <chr>, race <chr>
+## # A tibble: 475 x 12
+##    Date  Time  R_or_D Before_or_After screen_name text  hashtags
+##    <chr> <tim> <chr>  <chr>           <chr>       <chr> <chr>   
+##  1 12/3… 18:21 D      After           RepDeSauln… Over… Terrori…
+##  2 6/13… 18:39 D      After           LorettaSan… Let'… PrayFor…
+##  3 12/3… 01:56 D      After           AGBecerra   It’s… gunviol…
+##  4 6/13… 14:19 D      After           BradSherman My d… Orlando…
+##  5 11/2… 15:37 D      After           BradSherman Will… terrori…
+##  6 6/13… 17:59 D      After           RepAdamSch… Dona… <NA>    
+##  7 6/13… 17:58 D      After           RepAdamSch… Dona… <NA>    
+##  8 6/13… 13:40 D      After           RepAdamSch… The … Orlando 
+##  9 6/12… 16:38 D      After           RepAdamSch… This… Orlando 
+## 10 12/3… 17:26 D      After           RepAdamSch… FBI … <NA>    
+## # ... with 465 more rows, and 5 more variables: Nominate_dim1 <dbl>,
+## #   case <chr>, total_victims <int>, mental_health_issues <chr>,
+## #   race <chr>
 ```
 
 ![](Results_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
@@ -1015,46 +1012,46 @@ Need my tokens to be words instead of bigrams for sentiment analysis. So i chang
 ```
 ## 
 ## Call:
-## glm(formula = mentions_terror ~ R_or_D + Nominate_dim2, family = "binomial", 
+## glm(formula = mentions_terror ~ R_or_D + Nominate_dim1, family = "binomial", 
 ##     data = df2)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -0.2107  -0.1998  -0.1959  -0.1164   3.1945  
+## -0.2084  -0.1817  -0.1725  -0.1102   3.2620  
 ## 
 ## Coefficients:
 ##               Estimate Std. Error z value Pr(>|z|)    
-## (Intercept)    -5.0111     0.1151 -43.525   <2e-16 ***
-## R_or_DR         1.1076     0.1279   8.659   <2e-16 ***
-## Nominate_dim2  -0.1411     0.1842  -0.766    0.444    
+## (Intercept)    -4.8780     0.1721 -28.344   <2e-16 ***
+## R_or_DR         0.4556     0.3204   1.422   0.1550    
+## Nominate_dim1   0.6568     0.3497   1.878   0.0604 .  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 4509.3  on 29579  degrees of freedom
-## Residual deviance: 4416.9  on 29577  degrees of freedom
-##   (45 observations deleted due to missingness)
-## AIC: 4422.9
+##     Null deviance: 3889.9  on 29579  degrees of freedom
+## Residual deviance: 3820.1  on 29577  degrees of freedom
+##   (116 observations deleted due to missingness)
+## AIC: 3826.1
 ## 
 ## Number of Fisher Scoring iterations: 7
 ```
 
 ```
-## # A tibble: 692 x 3
-##    R_or_D Nominate_dim2  pred
+## # A tibble: 708 x 3
+##    R_or_D Nominate_dim1  pred
 ##    <fct>          <dbl> <dbl>
-##  1 D             -0.758 -4.90
-##  2 D             -0.752 -4.91
-##  3 D             -0.696 -4.91
-##  4 D             -0.659 -4.92
-##  5 D             -0.647 -4.92
-##  6 D             -0.62  -4.92
-##  7 D             -0.602 -4.93
-##  8 D             -0.571 -4.93
-##  9 D             -0.563 -4.93
-## 10 D             -0.546 -4.93
-## # ... with 682 more rows
+##  1 D             -0.767 -5.38
+##  2 D             -0.687 -5.33
+##  3 D             -0.666 -5.32
+##  4 D             -0.658 -5.31
+##  5 D             -0.656 -5.31
+##  6 D             -0.599 -5.27
+##  7 D             -0.589 -5.26
+##  8 D             -0.585 -5.26
+##  9 D             -0.582 -5.26
+## 10 D             -0.580 -5.26
+## # ... with 698 more rows
 ```
 
 ![](Results_files/figure-html/unnamed-chunk-13-2.png)<!-- -->
@@ -1062,9 +1059,8 @@ Need my tokens to be words instead of bigrams for sentiment analysis. So i chang
 ```
 ## 
 ## Call:
-## glm(formula = Shooting_related_terrorism ~ R_or_D + Nominate_dim2 + 
-##     race + race * R_or_D + race * Nominate_dim2, family = binomial(link = "logit"), 
-##     data = df3)
+## glm(formula = Shooting_related_terrorism ~ race * R_or_D + race * 
+##     Nominate_dim1, family = binomial(link = "logit"), data = df3)
 ## 
 ## Deviance Residuals: 
 ##    Min      1Q  Median      3Q     Max  
@@ -1072,69 +1068,55 @@ Need my tokens to be words instead of bigrams for sentiment analysis. So i chang
 ## 
 ## Coefficients: (1 not defined because of singularities)
 ##                           Estimate Std. Error    z value Pr(>|z|)    
-## (Intercept)             -4.172e+15  8.542e+07 -4.884e+07   <2e-16 ***
-## R_or_DR                  4.172e+15  7.787e+07  5.358e+07   <2e-16 ***
-## Nominate_dim2            4.952e+10  1.002e+08  4.939e+02   <2e-16 ***
-## raceOther                6.015e+15  8.636e+07  6.966e+07   <2e-16 ***
-## raceWhite                3.690e+15  7.804e+07  4.728e+07   <2e-16 ***
-## R_or_DR:raceOther       -3.433e+15  7.932e+07 -4.329e+07   <2e-16 ***
-## R_or_DR:raceWhite               NA         NA         NA       NA    
-## Nominate_dim2:raceOther -2.736e+15  1.035e+08 -2.644e+07   <2e-16 ***
-## Nominate_dim2:raceWhite  4.625e+15  1.466e+08  3.154e+07   <2e-16 ***
+## (Intercept)              2.520e+16  5.557e+08  4.534e+07   <2e-16 ***
+## raceOther               -2.192e+16  5.561e+08 -3.942e+07   <2e-16 ***
+## raceWhite               -1.465e+16  4.678e+08 -3.131e+07   <2e-16 ***
+## R_or_DR                 -2.070e+16  3.738e+08 -5.537e+07   <2e-16 ***
+## Nominate_dim1            2.188e+10  8.614e+08  2.540e+01   <2e-16 ***
+## raceOther:R_or_DR        2.090e+16  3.759e+08  5.559e+07   <2e-16 ***
+## raceWhite:R_or_DR               NA         NA         NA       NA    
+## raceOther:Nominate_dim1 -6.444e+14  8.626e+08 -7.470e+05   <2e-16 ***
+## raceWhite:Nominate_dim1  2.552e+16  9.372e+08  2.723e+07   <2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance:  53.00  on 116  degrees of freedom
-## Residual deviance: 504.61  on 109  degrees of freedom
-##   (358 observations deleted due to missingness)
-## AIC: 520.61
+##     Null deviance:  45.997  on 104  degrees of freedom
+## Residual deviance: 432.524  on  97  degrees of freedom
+##   (370 observations deleted due to missingness)
+## AIC: 448.52
 ## 
-## Number of Fisher Scoring iterations: 24
+## Number of Fisher Scoring iterations: 23
 ```
 
 ```
-## Likelihood ratio test
-## 
-## Model 1: Shooting_related_terrorism ~ R_or_D + Nominate_dim2 + race + 
-##     race * R_or_D + race * Nominate_dim2
-## Model 2: Shooting_related_terrorism ~ R_or_D + Nominate_dim2 + race
-##   #Df  LogLik Df Chisq Pr(>Chisq)
-## 1   7 -7.0747                    
-## 2   5 -7.0747 -2     0          1
+## [1] 0.05278111
 ```
 
 ```
-##          llh      llhNull           G2     McFadden         r2ML 
-##   -7.0747493 -133.2836519  252.4178053    0.9469196    0.9898412 
-##         r2CU 
-##    0.9976774
-```
-
-```
-## # A tibble: 1,272 x 4
-##    R_or_D Nominate_dim2 race        pred
+## # A tibble: 1,136 x 4
+##    R_or_D Nominate_dim1 race        pred
 ##    <fct>          <dbl> <fct>      <dbl>
-##  1 D             -0.647 Latino  -4.17e15
-##  2 D             -0.647 Other    3.61e15
-##  3 D             -0.647 White   -3.47e15
-##  4 D             -0.647 <NA>    NA      
-##  5 D             -0.563 Latino  -4.17e15
-##  6 D             -0.563 Other    3.38e15
-##  7 D             -0.563 White   -3.09e15
-##  8 D             -0.563 <NA>    NA      
-##  9 D             -0.492 Latino  -4.17e15
-## 10 D             -0.492 Other    3.19e15
-## # ... with 1,262 more rows
+##  1 D             -0.666 Latino   2.52e16
+##  2 D             -0.666 Other    3.70e15
+##  3 D             -0.666 White   -6.45e15
+##  4 D             -0.666 <NA>    NA      
+##  5 D             -0.564 Latino   2.52e16
+##  6 D             -0.564 Other    3.64e15
+##  7 D             -0.564 White   -3.84e15
+##  8 D             -0.564 <NA>    NA      
+##  9 D             -0.552 Latino   2.52e16
+## 10 D             -0.552 Other    3.63e15
+## # ... with 1,126 more rows
 ```
 
 ```
-## Classes 'tbl_df', 'tbl' and 'data.frame':	954 obs. of  4 variables:
+## Classes 'tbl_df', 'tbl' and 'data.frame':	852 obs. of  4 variables:
 ##  $ R_or_D       : Factor w/ 2 levels "D","R": 1 1 1 1 1 1 1 1 1 1 ...
-##  $ Nominate_dim2: num  -0.647 -0.647 -0.647 -0.563 -0.563 -0.563 -0.492 -0.492 -0.492 -0.49 ...
+##  $ Nominate_dim1: num  -0.666 -0.666 -0.666 -0.564 -0.564 -0.564 -0.552 -0.552 -0.552 -0.53 ...
 ##  $ race         : Factor w/ 3 levels "Latino","Other",..: 1 2 3 1 2 3 1 2 3 1 ...
-##  $ pred         : num  -4.17e+15 3.61e+15 -3.47e+15 -4.17e+15 3.38e+15 ...
+##  $ pred         : num  2.52e+16 3.70e+15 -6.45e+15 2.52e+16 3.64e+15 ...
 ```
 
 ![](Results_files/figure-html/unnamed-chunk-13-3.png)<!-- -->
