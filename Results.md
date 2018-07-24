@@ -709,7 +709,7 @@ output:
 ```
 
 <table class="kable_wrapper table table-striped" style="margin-left: auto; margin-right: auto;">
-<caption>Words correlated with the word terror at r&gt;0.2 among Republicans</caption>
+<caption>Words correlated with the word terror at r&gt;0.2 among Republicans after shootings</caption>
 <tbody>
   <tr>
    <td> 
@@ -761,7 +761,7 @@ output:
   </tr>
 </tbody>
 <tfoot><tr><td style="padding: 0; border: 0;" colspan="100%">
-<sup>1</sup> Footnote1; notonec refers to the hashtag NotOneCent. The hashtag was used during Iran nuclear negotions by those who opposed unfreezing Iran's assetts. </td></tr></tfoot>
+<sup>1</sup> Footnote1; notonec refers to the hashtag NotOneCent. The hashtag was used during Iran nuclear negotions<br>           by those who opposed unfreezing Iran's assetts. </td></tr></tfoot>
 </table>
 
 ```
@@ -779,7 +779,7 @@ output:
 ```
 
 <table class="kable_wrapper table" style="margin-left: auto; margin-right: auto;">
-<caption>Words correlated with the word terror at r&gt;0.2 among Democrats</caption>
+<caption>Words correlated with the word terror at r&gt;0.2 among Democrats after shootings</caption>
 <tbody>
   <tr>
    <td> 
@@ -823,7 +823,7 @@ output:
 ```
 
 <table class="kable_wrapper table" style="margin-left: auto; margin-right: auto;">
-<caption>Words correlated with the word terror at r&gt;0.2 among Republicans</caption>
+<caption>Words correlated with the word terror at r&gt;0.2 among Republicans before shootings</caption>
 <tbody>
   <tr>
    <td> 
@@ -881,7 +881,7 @@ output:
 ```
 
 <table class="kable_wrapper table" style="margin-left: auto; margin-right: auto;">
-<caption>Words correlated with the word terror at r&gt;0.2 among Democrats</caption>
+<caption>Words correlated with the word terror at r&gt;0.2 among Democrats  before shootings</caption>
 <tbody>
   <tr>
    <td> 
@@ -1007,116 +1007,193 @@ Need my tokens to be words instead of bigrams for sentiment analysis. So i chang
 ## #   race <chr>
 ```
 
-![](Results_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](Results_files/figure-html/unnamed-chunk-13-1.png)<!-- -->![](Results_files/figure-html/unnamed-chunk-13-2.png)<!-- -->
 
 ```
 ## 
 ## Call:
-## glm(formula = mentions_terror ~ R_or_D + Nominate_dim1, family = "binomial", 
-##     data = df2)
+## glm(formula = mentions_terror ~ R_or_D, family = "binomial", 
+##     data = df6)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -0.2084  -0.1817  -0.1725  -0.1102   3.2620  
+## -0.6700  -0.6700  -0.4512  -0.4512   2.1612  
 ## 
 ## Coefficients:
-##               Estimate Std. Error z value Pr(>|z|)    
-## (Intercept)    -4.8780     0.1721 -28.344   <2e-16 ***
-## R_or_DR         0.4556     0.3204   1.422   0.1550    
-## Nominate_dim1   0.6568     0.3497   1.878   0.0604 .  
+##             Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)  -2.2336     0.2148 -10.401  < 2e-16 ***
+## R_or_DR       0.8538     0.2498   3.419 0.000629 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 3889.9  on 29579  degrees of freedom
-## Residual deviance: 3820.1  on 29577  degrees of freedom
-##   (116 observations deleted due to missingness)
-## AIC: 3826.1
+##     Null deviance: 555.00  on 630  degrees of freedom
+## Residual deviance: 542.11  on 629  degrees of freedom
+## AIC: 546.11
+## 
+## Number of Fisher Scoring iterations: 4
+```
+
+```
+## (Intercept)     R_or_DR 
+##   0.0967742   0.7013663
+```
+
+#Adding predictions 
+terrorism<- df2 %>%
+  data_grid(R_or_D,.model = regression1)%>%
+  add_predictions(regression1)%>%
+  mutate(pred=logit2prob(pred))
+terrorism
+
+#Plotting first model
+
+ggplot(terrorism,
+       aes(R_or_D, pred))+
+  geom_col()+
+  scale_colour_manual(labels = c("D", "R"), 
+                      values=c("blue","red"))+
+  labs(title="Relationship Between Mentioning Terrorism, 
+       Party ID, and Ideology",
+       x="Ideology(Nominate Score)", 
+       y="Log Odds Ratio of Mentioning Terrorism")+
+   theme(legend.title = element_blank())
+
+
+#Extracting all tweets after shootings that are potentially related to the shooting
+
+shooting_keywords <- Congress$text[grep("[Ss]oothing|[Tt]ragic|[Tt]ragedy|
+                                      [Mm]assacare, Congress$text)]
+
+
+A1 <- Congress$text[grep("[Ss]hooter|[Aa]ttack", Congress$text)]
+tidy_A1 <- Congress%>%
+filter(text %in%A1)
+tidy_A1
+write_as_csv(tidy_A1,"tidy_A1.csv")
+
+tidy_shooting_keywords <- Congress%>%
+  filter(text %in%shooting_keywords)
+tidy_shooting_keywords
+
+
+#I then saved it, read them all to make sure they are shooting related and added shooter's race
+
+shooting_keywords2 <- read_csv("shooting_keywords.csv")
+df4 <- read_csv("shooting_terrorism_df.csv")
+df4 <- df4%>%
+  filter(Shooting_related_terrorism =="1")%>%
+  select(-11)
+df4
+
+
+#Combining shooting_keywords with df4 dataframe
+df5 <- rbind(df4,shooting_keywords2)
+
+
+```
+## 
+## Call:
+## glm(formula = mentions_terror ~ race * Nominate_dim1, family = binomial, 
+##     data = df6)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.3541  -0.2341  -0.2034  -0.1598   2.9636  
+## 
+## Coefficients:
+##                         Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)              -0.7277     0.1516  -4.801 1.58e-06 ***
+## raceOther                -3.3784     0.4745  -7.120 1.08e-12 ***
+## Nominate_dim1             1.3264     0.3280   4.043 5.27e-05 ***
+## raceOther:Nominate_dim1  -0.7060     0.9907  -0.713    0.476    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 555.00  on 630  degrees of freedom
+## Residual deviance: 381.81  on 627  degrees of freedom
+## AIC: 389.81
 ## 
 ## Number of Fisher Scoring iterations: 7
 ```
 
 ```
-## # A tibble: 708 x 3
-##    R_or_D Nominate_dim1  pred
-##    <fct>          <dbl> <dbl>
-##  1 D             -0.767 -5.38
-##  2 D             -0.687 -5.33
-##  3 D             -0.666 -5.32
-##  4 D             -0.658 -5.31
-##  5 D             -0.656 -5.31
-##  6 D             -0.599 -5.27
-##  7 D             -0.589 -5.26
-##  8 D             -0.585 -5.26
-##  9 D             -0.582 -5.26
-## 10 D             -0.580 -5.26
-## # ... with 698 more rows
-```
-
-![](Results_files/figure-html/unnamed-chunk-13-2.png)<!-- -->
-
-```
-## 
-## Call:
-## glm(formula = Shooting_related_terrorism ~ race * R_or_D + race * 
-##     Nominate_dim1, family = binomial(link = "logit"), data = df3)
-## 
-## Deviance Residuals: 
-##    Min      1Q  Median      3Q     Max  
-##  -8.49    0.00    0.00    0.00    8.49  
-## 
-## Coefficients: (1 not defined because of singularities)
-##                           Estimate Std. Error    z value Pr(>|z|)    
-## (Intercept)              2.520e+16  5.557e+08  4.534e+07   <2e-16 ***
-## raceOther               -2.192e+16  5.561e+08 -3.942e+07   <2e-16 ***
-## raceWhite               -1.465e+16  4.678e+08 -3.131e+07   <2e-16 ***
-## R_or_DR                 -2.070e+16  3.738e+08 -5.537e+07   <2e-16 ***
-## Nominate_dim1            2.188e+10  8.614e+08  2.540e+01   <2e-16 ***
-## raceOther:R_or_DR        2.090e+16  3.759e+08  5.559e+07   <2e-16 ***
-## raceWhite:R_or_DR               NA         NA         NA       NA    
-## raceOther:Nominate_dim1 -6.444e+14  8.626e+08 -7.470e+05   <2e-16 ***
-## raceWhite:Nominate_dim1  2.552e+16  9.372e+08  2.723e+07   <2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance:  45.997  on 104  degrees of freedom
-## Residual deviance: 432.524  on  97  degrees of freedom
-##   (370 observations deleted due to missingness)
-## AIC: 448.52
-## 
-## Number of Fisher Scoring iterations: 23
+## Classes 'tbl_df', 'tbl' and 'data.frame':	631 obs. of  10 variables:
+##  $ Date           : chr  "11/28/15" "11/30/15" "12/2/15" "12/2/15" ...
+##  $ Time           : 'hms' num  20:24:05 06:00:00 15:34:21 15:35:57 ...
+##   ..- attr(*, "units")= chr "secs"
+##  $ R_or_D         : Factor w/ 2 levels "D","R": 1 1 1 2 1 1 2 2 1 2 ...
+##  $ screen_name    : chr  "RepLawrence" "SenatorReid" "RepLawrence" "CongressmanGT" ...
+##  $ text           : chr  "Tell @TheJusticeDept to #InvestigateClinicViolence as domestic terrorism. Sign now: https://t.co/FVjlfANQ9Y" "In wake of domestic terrorist act, I commend @PPFA for refusing to allow threats and violence to stand in the w"| __truncated__ "When will @HouseGOP close the loophole that allows suspected #terrorists to legally buy guns in the U.S.? https"| __truncated__ "Attended task force on Combatting Terrorist and Foreign Fighter Travel briefing this AM.  #Safety #Security" ...
+##  $ hashtags       : chr  "InvestigateClinicViolence" NA "terrorists" "Safety Security" ...
+##  $ Nominate_dim1  : num  -0.44 -0.276 -0.44 0.307 -0.281 -0.512 0.361 0.317 -0.348 0.349 ...
+##  $ race           : chr  "Other" "Other" "Middle Eastern" "Middle Eastern" ...
+##  $ mentions_terror: Factor w/ 2 levels "0","1": 2 2 2 2 2 2 2 2 2 2 ...
+##  $ newvar         : Factor w/ 9 levels "1","2","3","7",..: 1 1 2 2 2 2 2 2 2 2 ...
+##  - attr(*, "spec")=List of 2
+##   ..$ cols   :List of 10
+##   .. ..$ Date           : list()
+##   .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
+##   .. ..$ Time           :List of 1
+##   .. .. ..$ format: chr ""
+##   .. .. ..- attr(*, "class")= chr  "collector_time" "collector"
+##   .. ..$ R_or_D         : list()
+##   .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
+##   .. ..$ screen_name    : list()
+##   .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
+##   .. ..$ text           : list()
+##   .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
+##   .. ..$ hashtags       : list()
+##   .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
+##   .. ..$ Nominate_dim1  : list()
+##   .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
+##   .. ..$ race           : list()
+##   .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
+##   .. ..$ mentions_terror: list()
+##   .. .. ..- attr(*, "class")= chr  "collector_integer" "collector"
+##   .. ..$ newvar         : list()
+##   .. .. ..- attr(*, "class")= chr  "collector_integer" "collector"
+##   ..$ default: list()
+##   .. ..- attr(*, "class")= chr  "collector_guess" "collector"
+##   ..- attr(*, "class")= chr "col_spec"
 ```
 
 ```
-## [1] 0.05278111
+##             (Intercept)               raceOther           Nominate_dim1 
+##              0.48304218              0.03410235              3.76733601 
+## raceOther:Nominate_dim1 
+##              0.49360521
 ```
 
 ```
-## # A tibble: 1,136 x 4
-##    R_or_D Nominate_dim1 race        pred
-##    <fct>          <dbl> <fct>      <dbl>
-##  1 D             -0.666 Latino   2.52e16
-##  2 D             -0.666 Other    3.70e15
-##  3 D             -0.666 White   -6.45e15
-##  4 D             -0.666 <NA>    NA      
-##  5 D             -0.564 Latino   2.52e16
-##  6 D             -0.564 Other    3.64e15
-##  7 D             -0.564 White   -3.84e15
-##  8 D             -0.564 <NA>    NA      
-##  9 D             -0.552 Latino   2.52e16
-## 10 D             -0.552 Other    3.63e15
-## # ... with 1,126 more rows
+##             (Intercept)               raceOther           Nominate_dim1 
+##              0.32571035              0.03297773              0.79023925 
+## raceOther:Nominate_dim1 
+##              0.33047904
 ```
 
 ```
-## Classes 'tbl_df', 'tbl' and 'data.frame':	852 obs. of  4 variables:
-##  $ R_or_D       : Factor w/ 2 levels "D","R": 1 1 1 1 1 1 1 1 1 1 ...
-##  $ Nominate_dim1: num  -0.666 -0.666 -0.666 -0.564 -0.564 -0.564 -0.552 -0.552 -0.552 -0.53 ...
-##  $ race         : Factor w/ 3 levels "Latino","Other",..: 1 2 3 1 2 3 1 2 3 1 ...
-##  $ pred         : num  2.52e+16 3.70e+15 -6.45e+15 2.52e+16 3.64e+15 ...
+## [1] 2.605704e-37
 ```
 
-![](Results_files/figure-html/unnamed-chunk-13-3.png)<!-- -->
+```
+## # A tibble: 516 x 3
+##    Nominate_dim1 race             pred
+##            <dbl> <chr>           <dbl>
+##  1        -0.687 Middle Eastern 0.163 
+##  2        -0.687 Other          0.0106
+##  3        -0.666 Middle Eastern 0.166 
+##  4        -0.666 Other          0.0108
+##  5        -0.658 Middle Eastern 0.168 
+##  6        -0.658 Other          0.0108
+##  7        -0.656 Middle Eastern 0.168 
+##  8        -0.656 Other          0.0108
+##  9        -0.589 Middle Eastern 0.181 
+## 10        -0.589 Other          0.0113
+## # ... with 506 more rows
+```
+
+![](Results_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
