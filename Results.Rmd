@@ -875,10 +875,8 @@ ggplot(terrorism2,
   labs(title="Predicted Probability of Framing a Mass shooting as Terrorism Given
 Shooter's Race and MOC's Ideology ",
        x="Ideology(Nominate Score)",
-       y="Predicted Probability of Framing a Shooting as Terrorism")+
-    #scale_colour_manual(labels = c("D", "R"), 
-                     #values=c("blue","red"))+
-    theme(legend.title = element_blank())
+       y="Predicted Probability")
+  
 
 
 
